@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mage Dice Roller</title>
+    <link rel="stylesheet" type="text/css" href="css/dice.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="container">
+    <h1>Mage Dice Roller</h1>
+    <div class="topCase">
+        <div id="diffBox">
+            <h3>Difficulty <span id="diffDisp">6</span></h3>
+            <div class="butnHold">
+                <input type="button" id="diffDown" value="&ndash;">
+                <input type="button" id="diffUp" value="+">
+            </div>
+            <h3>Threshold <span id="threshDisp">0</span></h3>
+            <div class="butnHold">
+            	<input type="button" id="threshDown" value="&ndash;">
+            	<input type="button" id="threshUp" value="+">
+            </div>
+        </div>
+        <div id="optionBox">
+            <h3>Botches</h3>
+            <p>
+                <input type="radio" name="botch" id="botchStndrd" value="standard" checked="checked">
+                <label for="botchStndrd">Original Botch</label>
+            </p>
+            <p>
+                <input type="radio" name="botch" id="botchRev" value="revised">
+                <label for="botchRev">Rev/M20 Botch</label>
+            </p>
+            <p>
+                <input type="radio" name="botch" id="botchNone" value="none">
+                <label for="botchNone">No Botch</label>
+            </p>
+        </div>
+        <div id="rerollBox">
+            <h3>10s</h3>
+            <p>
+                <input type="radio" name="do10" id="regular10" value="one" checked="checked">
+                <label for="regular10">Regular 10s</label>
+            </p>
+            <p>
+                <input type="radio" name="do10" id="reroll10" value="reroll">
+                <label for="reroll10">Reroll 10s</label>
+            </p>
+            <p>
+                <input type="radio" name="do10" id="double10" value="two">
+                <label for="double10">10s double</label>
+            </p>
+        </div>
+    </div>
+    <div id="rollBox">
+        <h3>Roll</h3>
+        <input type="button" value="1" class="dieRoll">
+        <input type="button" value="2" class="dieRoll">
+        <input type="button" value="3" class="dieRoll">
+        <input type="button" value="4" class="dieRoll">
+        <input type="button" value="5" class="dieRoll">
+        <input type="button" value="6" class="dieRoll">
+        <input type="button" value="7" class="dieRoll">
+        <input type="button" value="8" class="dieRoll">
+        <input type="button" value="9" class="dieRoll">
+        <input type="button" value="10" class="dieRoll">
+        <input type="button" value="11" class="dieRoll">
+        <input type="button" value="12" class="dieRoll">
+        <input type="button" value="13" class="dieRoll">
+        <input type="button" value="14" class="dieRoll">
+        <input type="button" value="15" class="dieRoll">
+        <div class="selHolder">
+            <select name="lotDice" id="lotDice">
+                <option value="16" selected="selected">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
+                <option value="32">32</option>
+                <option value="33">33</option>
+                <option value="34">34</option>
+                <option value="35">35</option>
+                <option value="36">36</option>
+                <option value="37">37</option>
+                <option value="38">38</option>
+                <option value="39">39</option>
+                <option value="40">40</option>
+            </select>
+            <input type="button" name="rollMany" id="rollMany" value="Roll">
+        </div>
+    </div>
+    <div class="fourplexCase">
+        <div class="fourplex">
+            <h4>Result</h4>
+            <span id="resultDisp"></span>
+        </div>
+        <div class="fourplex">
+            <h4>Successes</h4>
+            <span id="successDisp"></span>
+        </div>
+        <div class="fourplex">
+            <h4>Ones</h4>
+            <span id="onesDisp"></span>
+        </div>
+        <div class="fourplex">
+            <h4>Dice</h4>
+            <span id="diceDisp"></span>
+        </div>
+    </div>
+    <p id="resultMsg">&nbsp;</p>
+    <h2>Result History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Result</th>
+                <th>Final<br>Successes</th>
+                <th>Successes</th>
+                <th>Ones</th>
+                <th>Diff</th>
+                <th># Dice</th>
+            </tr>
+        </thead>
+        <tbody id="tableRows"></tbody>
+    </table>
+</div>
+<!--  branding for Mage the Podcast  -->
+<div class="brand">
+    <span>Visit</span> <a href="https://magethepodcast.com/">Mage: the Podcast</a>
+</div>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+<script src="js/dice.js"></script>
+</body>
+</html>
