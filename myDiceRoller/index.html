@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css"
+        integrity="sha256-ybRkN9dBjhcS2qrW1z+hfCxq+1aBdwyQM5wlQoQVt/0=" crossorigin="anonymous" />
+
     <title>My Dice Roller</title>
 </head>
 
@@ -17,21 +20,33 @@
     <div class="container">
         <h1>Hi I'm a placeholder</h1>
         <div id="app">
-            <div>
-                Botch: 
+            <button v-for="b in botchOptions" class="btn btn-block btn-primary" v-show="b.value == botch"
+                v-on:click="botchModal('show')">
+                Botch: {{b.display}}
+            </button>
+            <!-- <div>
+                Botch:
                 <select v-model="botch">
                     <option v-for="o in botchOptions" v-bind:value="o.value">{{o.display}}</option>
                 </select>
-            </div>
-            <div>
+            </div> -->
+            <button v-for="t in tensOptions" class="btn btn-block btn-primary" v-show="t.value == tens"
+            v-on:click="tensModal('show')">
+                10s: {{t.display}}
+            </button>
+            <!-- <div>
                 Tens:
                 <select v-model="tens">
                     <option v-for="o in tensOptions" v-bind:value="o.value">{{o.display}}</option>
                 </select>
-            </div>
-            <div>Diff: <button v-on:click="changeDifficulty(-1)">Minus</button> {{difficulty}} <button v-on:click="changeDifficulty(1)">Plus</button></div>
-            <div>Thresh: <button v-on:click="changeThreshold(-1)">Minus</button> {{threshold}} <button v-on:click="changeThreshold(1)">Plus</button></div>
-            <div># Dice: <button v-on:click="changeNumDice(-5)">-5</button> <button v-on:click="changeNumDice(-1)">-1</button> {{numDice}} <button v-on:click="changeNumDice(1)">+1</button> <button v-on:click="changeNumDice(5)">+5</button></div>
+            </div> -->
+            <div>Diff: <button v-on:click="changeDifficulty(-1)">Minus</button> {{difficulty}} <button
+                    v-on:click="changeDifficulty(1)">Plus</button></div>
+            <div>Thresh: <button v-on:click="changeThreshold(-1)">Minus</button> {{threshold}} <button
+                    v-on:click="changeThreshold(1)">Plus</button></div>
+            <div># Dice: <button v-on:click="changeNumDice(-5)">-5</button> <button
+                    v-on:click="changeNumDice(-1)">-1</button> {{numDice}} <button
+                    v-on:click="changeNumDice(1)">+1</button> <button v-on:click="changeNumDice(5)">+5</button></div>
             <div><button v-on:click="rollDice()">Roll</button></div>
             <div>{{lastResult}}</div>
 
@@ -45,6 +60,38 @@
                         <span class="text-danger" v-else-if="f == 1">{{f + ' '}}</span>
                         <span v-else>{{f + ' '}}</span>
                     </span>
+                </div>
+            </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="botch-picker">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h5 class="text-center">Choose Botch Type</h5>
+                            <button v-for="b in botchOptions" class="btn btn-block"
+                                v-bind:class="{ 'btn-primary': b.value == botch, 'btn-outline-primary': b.value != botch }"
+                                v-on:click="setBotch(b.value)">
+                                <span v-if="b.value == botch"><i class="fas fa-check"></i> </span>
+                                {{b.display}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="tens-picker">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h5 class="text-center">Choose 10s Type</h5>
+                            <button v-for="t in tensOptions" class="btn btn-block"
+                                v-bind:class="{ 'btn-primary': t.value == tens, 'btn-outline-primary': t.value != tens }"
+                                v-on:click="setTens(t.value)">
+                                <span v-if="t.value == tens"><i class="fas fa-check"></i> </span>
+                                {{t.display}}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,6 +110,8 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"
         integrity="sha256-ngFW3UnAN0Tnm76mDuu7uUtYEcG3G5H1+zioJw3t+68=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/js/all.min.js"
+        integrity="sha256-0vuk8LXoyrmCjp1f0O300qo1M75ZQyhH9X3J6d+scmk=" crossorigin="anonymous"></script>
     <script src="js/dice-app.js"></script>
 </body>
 

@@ -60,6 +60,20 @@ app = new Vue({
             this.numDice += amount;
             this.clampNumDice();
         },
+        botchModal: function(cmd){
+            $('#botch-picker').modal(cmd);
+        },
+        setBotch: function (newBotch){
+            this.botch = newBotch
+            this.botchModal('hide');
+        },
+        tensModal: function(cmd){
+            $('#tens-picker').modal(cmd);
+        },
+        setTens: function (newTens){
+            this.tens = newTens
+            this.tensModal('hide');
+        },
         doubleTens: function(){
             return this.tens === 'double';
         },
@@ -169,6 +183,3 @@ app = new Vue({
         }
     }
 });
-
-
-
