@@ -13,41 +13,47 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css"
         integrity="sha256-ybRkN9dBjhcS2qrW1z+hfCxq+1aBdwyQM5wlQoQVt/0=" crossorigin="anonymous" />
 
+    <link rel="stylesheet" href="css/dice-app.css"/>
+
     <title>My Dice Roller</title>
 </head>
 
 <body>
     <div class="container">
-        <h1>Hi I'm a placeholder</h1>
-        <div id="app">
-            <button v-for="b in botchOptions" class="btn btn-block btn-primary" v-show="b.value == botch"
+        <h1 class="d-none d-md-block">Large placeholder</h1>
+        <h5 class="d-md-none">Small placeholder</h5>
+        <div id="app" v-cloak>
+            <button v-for="b in botchOptions" class="btn btn-block btn-primary" v-if="b.value == botch"
                 v-on:click="botchModal('show')">
                 Botch: {{b.display}}
             </button>
-            <!-- <div>
-                Botch:
-                <select v-model="botch">
-                    <option v-for="o in botchOptions" v-bind:value="o.value">{{o.display}}</option>
-                </select>
-            </div> -->
-            <button v-for="t in tensOptions" class="btn btn-block btn-primary" v-show="t.value == tens"
+            <button v-for="t in tensOptions" class="btn btn-block btn-primary" v-if="t.value == tens"
             v-on:click="tensModal('show')">
                 10s: {{t.display}}
             </button>
-            <!-- <div>
-                Tens:
-                <select v-model="tens">
-                    <option v-for="o in tensOptions" v-bind:value="o.value">{{o.display}}</option>
-                </select>
-            </div> -->
-            <div>Diff: <button v-on:click="changeDifficulty(-1)">Minus</button> {{difficulty}} <button
-                    v-on:click="changeDifficulty(1)">Plus</button></div>
-            <div>Thresh: <button v-on:click="changeThreshold(-1)">Minus</button> {{threshold}} <button
-                    v-on:click="changeThreshold(1)">Plus</button></div>
-            <div># Dice: <button v-on:click="changeNumDice(-5)">-5</button> <button
-                    v-on:click="changeNumDice(-1)">-1</button> {{numDice}} <button
-                    v-on:click="changeNumDice(1)">+1</button> <button v-on:click="changeNumDice(5)">+5</button></div>
-            <div><button v-on:click="rollDice()">Roll</button></div>
+            <div class="mt-2">
+                Diff:
+                <button class="btn btn-sm btn-primary" v-on:click="changeDifficulty(-1)">-1</button>
+                {{difficulty}}
+                <button class="btn btn-sm btn-primary" v-on:click="changeDifficulty(1)">+1</button>
+            </div>
+            <div class="mt-2">
+                Thresh:
+                <button class="btn btn-sm btn-primary" v-on:click="changeThreshold(-1)">-1</button>
+                {{threshold}}
+                <button class="btn btn-sm btn-primary" v-on:click="changeThreshold(1)">+1</button>
+            </div>
+            <div class="mt-2">
+                # Dice:
+                <button class="btn btn-sm btn-primary" v-on:click="changeNumDice(-5)">-5</button>
+                <button class="btn btn-sm btn-primary" v-on:click="changeNumDice(-1)">-1</button>
+                {{numDice}}
+                <button class="btn btn-sm btn-primary" v-on:click="changeNumDice(1)">+1</button>
+                <button class="btn btn-sm btn-primary" v-on:click="changeNumDice(5)">+5</button>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-primary" v-on:click="rollDice()">Roll</button>
+            </div>
             <div>{{lastResult}}</div>
 
             <div class="row" v-if="lastResult != null">
