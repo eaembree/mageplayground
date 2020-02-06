@@ -3,9 +3,9 @@ app = new Vue({
     el: '#app',
     data: {
         botchOptions: [
-            { value: 'original', display: 'Original Botch' },
-            { value: 'm20', display: 'Rev/M20 Botch' },
-            { value: 'none', display: 'No Botch' }
+            { value: 'original', display: 'Original' },
+            { value: 'm20', display: 'Rev/M20' },
+            { value: 'none', display: 'None' }
         ],
         tensOptions: [
             { value: 'regular', display: 'Regular 10s' },
