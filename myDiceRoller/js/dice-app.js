@@ -165,6 +165,7 @@ app = new Vue({
             let outcome = isBotch ? 'Botch' : (finalSuccesses > 0 ? 'Success' : 'Fail');
                 
             return {
+                numDice: this.numDice,
                 rollOutcomes: rollOutcomes,
                 rollOutcomesArray: this.resultDictToArray(rollOutcomes),
                 outcome: outcome,
@@ -172,7 +173,9 @@ app = new Vue({
                 ones: ones,
                 finalSuccesses: finalSuccesses,
                 difficulty : this.difficulty,
-                threshold: this.threshold
+                threshold: this.threshold,
+                botchType: this.botch,
+                tensType: this.tens
             };
         },
         rollDice: function(){

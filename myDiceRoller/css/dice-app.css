@@ -1,3 +1,48 @@
 [v-cloak] {
   display: none;
 }
+
+.border-mage {
+  border-width: 2px;
+  border-color: #a32fa3 !important;
+  border-radius: 5px;
+}
+
+.bg-mage {
+  background-color: #eee !important;
+}
+
+.text-mage {
+  color: #800080;
+}
+
+.btn-mage {
+  border-width: 2px;
+  border-radius: 5px;
+  color: #a32fa3;
+  border-color: #a32fa3;
+  background-color: #FFC300;
+}
+
+.btn-mage-inv {
+  color: #FFC300;
+  background-color: #800080;
+}
+
+.btn-outline-mage-inv {
+  color: #800080;
+  border-color: #800080;
+}
+
+.mage-title {
+  color: #FFC300;
+  background-color: #800080;
+}
+
+.die-success {
+  font-weight: bold;
+}
+
+.die-one {
+  color: red;
+}
