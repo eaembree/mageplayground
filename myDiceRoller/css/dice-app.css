@@ -24,9 +24,31 @@
   background-color: #FFC300;
 }
 
+.btn-mage:hover {
+  color: #800080;
+  border-color: #800080;
+  background-color: #ffdb66;
+}
+
+.btn-mage:focus {
+  /*box-shadow: 0 0 0 0.2rem rgba(204, 0, 204, 0.5);*/
+  box-shadow: none;
+}
+
 .btn-mage-inv {
   color: #FFC300;
   background-color: #800080;
+}
+
+
+.btn-mage-inv:hover {
+  color: #ffc91a;
+  background-color: #b300b3;
+}
+
+.btn-mage-inv:focus {
+  /* box-shadow: 0 0 0 0.2rem rgba(255, 195, 0, 0.9); */
+  box-shadow: none;
 }
 
 .btn-outline-mage-inv {
@@ -45,4 +67,26 @@
 
 .die-one {
   color: red;
+}
+
+.table .thead-mage-inv th {
+  color: #FFC300;
+  background-color: #800080;
+  border-color: #ffc91a;
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .table.history-table {
+    font-size: 70%;
+  }
+}
+
+.table th.bt-0 {
+  border-top: 0;
+}
+
+.history-holder {
+  overflow-y: auto;
+  max-height: 300px;
 }

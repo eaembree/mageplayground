@@ -23,7 +23,8 @@ app = new Vue({
         tens: 'regular',
         numDice: 3,
         lastResult: null,
-        results: []
+        results: [],
+        showHistory: false
     },
     methods: {
         rollDie: function(){
@@ -180,9 +181,11 @@ app = new Vue({
         },
         rollDice: function(){
             let result = this.getRollResult();
-            console.log(result);
             this.lastResult = result;
-            this.results.push(result);
+            this.results.splice(0, 0, result);
+        },
+        toggleHistory: function(){
+            this.showHistory = !this.showHistory;
         }
     }
 });
