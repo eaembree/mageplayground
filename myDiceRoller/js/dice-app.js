@@ -62,6 +62,7 @@ app = new Vue({
             this.clampNumDice();
         },
         botchModal: function(cmd){
+            console.log('botch')
             $('#botch-picker').modal(cmd);
         },
         setBotch: function (newBotch){
@@ -69,6 +70,7 @@ app = new Vue({
             this.botchModal('hide');
         },
         tensModal: function(cmd){
+            console.log('tens')
             $('#tens-picker').modal(cmd);
         },
         setTens: function (newTens){
@@ -186,6 +188,10 @@ app = new Vue({
         },
         toggleHistory: function(){
             this.showHistory = !this.showHistory;
+        },
+        helpClicked: function(){
+            console.log('help')
+            $('#help-modal').modal('show');
         }
     }
 });

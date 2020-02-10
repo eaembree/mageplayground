@@ -20,8 +20,8 @@
 
 <body>
     <div class="container">
-        <h1 class="d-none d-md-block text-center mage-title">Mage Dice Roller</h1>
-        <h5 class="d-md-none text-center mage-title pt-1 pb-1">Mage Dice Roller</h5>
+        <h1 class="d-none d-md-block text-center mage-title">Mage Dice Roller <button class="btn btn-sm btn-mage mb-2" data-toggle="modal" data-target="#help-modal"><i class="far fa-question-circle"></i></button></h1>
+        <h5 class="d-md-none text-center mage-title pt-1 pb-1">Mage Dice Roller <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1" data-toggle="modal" data-target="#help-modal"><i class="far fa-question-circle"></i></button></h5>
         <div id="app" v-cloak>
             <div class="row">
                 <div class="col">
@@ -205,6 +205,29 @@
                                 {{t.display}}
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="help-modal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Help</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                        <div class="modal-body">
+                            <p>Click the Botch button to change botch type.</p>
+                            <p>Click the 10s button to change 10s type</p>
+                            <p>Click the - and + buttons to decrease or increase a given number</p>
+                            <p>Click the Roll button to roll the dice and see the outcome. Outcomes only visible after first roll.</p>
+                            <p>You can expand the history of rolls with the History button (only visible after first roll)</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
                     </div>
                 </div>
             </div>
