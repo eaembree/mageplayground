@@ -189,9 +189,8 @@ app = new Vue({
         toggleHistory: function(){
             this.showHistory = !this.showHistory;
         },
-        helpClicked: function(){
-            console.log('help')
-            $('#help-modal').modal('show');
+        clearHistory: function(){
+            this.results.splice(0, this.results.length);
         }
     }
 });
