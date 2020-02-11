@@ -1,3 +1,334 @@
+function DiceRoller(){
+
+    this.botch = 'original';
+    this.threshold = 'regular';
+
+    this.setBotch = function (botch) {
+        this.botch = botch;
+    }
+
+    this.setThreshold = function (threshold) {
+        this.threshold = threshold;
+    }
+
+    this.doubleTens = function(){
+        return this.tens === 'double';
+    }
+
+    this.doRerollTens = function(){
+        return this.tens === 'reroll';
+    }
+
+    this.allowBotch = function(){
+        return this.botch !== 'none';
+    }
+
+    this.originalBotch = function(){
+        return this.botch === 'original';
+    }
+
+    this.revM20Botch = function(){
+        return this.botch === 'rev-m20';
+    }
+
+    this.emptyRollsDict = function(){
+        return {
+            1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
+            6: 0, 7: 0, 8: 0, 9: 0, 10: 0
+        }
+    }
+
+    this.mergeDiceDicts = function (first, second){
+        let final = this.emptyRollsDict();
+    
+        for(let face = 1; face < 11; face++){
+            final[face] = first[face] + second[face];
+        }
+    
+        return final;
+    }
+
+    this.rollDie = function(){
+        return Math.floor(Math.random() * 10) + 1;
+    }
+
+    this.rollSingleOutcome = function(num){
+        let dict = this.emptyRollsDict();
+        for(let i = 0; i < num; i++){
+            let outcome = this.rollDie();
+            dict[outcome] = dict[outcome] + 1
+        }
+        return dict;
+    }
+
+    this.rollTotalOutcome = function(numDice){
+        let newRollDict = this.rollSingleOutcome(numDice);
+        let totalRollDict = this.mergeDiceDicts(this.emptyRollsDict(), newRollDict);
+    
+        if(this.doRerollTens()){
+            while(newRollDict[10] > 0){
+                newRollDict = this.rollSingleOutcome(newRollDict[10]);
+                totalRollDict = this.mergeDiceDicts(totalRollDict, newRollDict);
+            }
+        }
+    
+        return totalRollDict;
+    }
+
+    this.resultDictToArray = function(dict){
+        let arr = [];
+        for(let face = 10; face > 0; face--){
+            for(let n = dict[face]; n > 0; n--){
+                arr.push(face);
+            }
+        }
+        return arr;
+    }
+
+    this.getRollResult = function (numDice, difficulty, threshold){
+        let rollOutcomes = this.rollTotalOutcome(numDice);
+        let successes = 0;
+        let ones = rollOutcomes[1];
+    
+        for(let face = difficulty; face < 11; face++){
+            successes += rollOutcomes[face];
+        }
+    
+        if(this.doubleTens()){
+            successes += rollOutcomes[10]
+        }
+    
+        let finalSuccesses = successes;
+        let isBotch = false;
+        if(this.allowBotch()){
+            if(this.originalBotch()){
+                finalSuccesses -= ones;
+                if(finalSuccesses < 0){
+                    finalSuccesses = 0;
+                }
+            }
+    
+            if(finalSuccesses <= 0 && ones > 0){
+                isBotch = true;
+            }
+        }
+
+        let minSuccesses = threshold > 0 ? threshold : 1;
+        let outcome = isBotch ? 'Botch' : (finalSuccesses >= minSuccesses ? 'Success' : 'Fail');
+            
+        return {
+            numDice: numDice,
+            rollOutcomes: rollOutcomes,
+            rollOutcomesArray: this.resultDictToArray(rollOutcomes),
+            outcome: outcome,
+            successes: successes,
+            ones: ones,
+            finalSuccesses: finalSuccesses,
+            difficulty : difficulty,
+            threshold: threshold,
+            botchType: this.botch,
+            tensType: this.tens
+        };
+    }
+}
+
+Vue.component('single-action', {
+    props: {
+        difficultyMin: Number,
+        difficultyMax: Number,
+        thresholdMin: Number,
+        thresholdMax: Number,
+        clamp: Function,
+        botchOptions: Array,
+        botch: String,
+        tensOptions: Array,
+        tens: String,
+        diceRoller: Object
+    },
+    data: function () {
+      return {
+        difficulty: 6,
+        threshold: 0,
+        numDice: 3,
+        lastResult: null,
+        results: [],
+        showHistory: false
+      }
+    },
+    methods: {
+        changeDifficulty: function(amount){
+            this.difficulty += amount;
+            this.difficulty = this.clamp(this.difficulty, this.difficultyMin, this.difficultyMax);
+        },
+        changeThreshold: function(amount){
+            this.threshold += amount;
+            this.threshold = this.clamp(this.threshold, this.thresholdMin, this.thresholdMax);
+        },
+        changeNumDice: function(amount){
+            this.numDice += amount;
+            this.numDice = this.clamp(this.numDice, 1, 500);
+        },
+        rollDice: function(){
+            console.log(this.numDice + ' ' + this.difficulty + ' ' + this.threshold)
+            let result = this.diceRoller.getRollResult(this.numDice, this.difficulty, this.threshold);
+            this.lastResult = result;
+            this.results.splice(0, 0, result);
+        },
+        toggleHistory: function(){
+            this.showHistory = !this.showHistory;
+        },
+        clearHistory: function(){
+            this.results.splice(0, this.results.length);
+        }
+    },
+    template: '<div> ' +
+    '<div class="row mt-2"> ' +
+        '<div class="col"> ' +
+            '<div class="card border-mage"> ' +
+                '<div class="card-body bg-mage p-1"> ' +
+                    '<div class="d-flex justify-content-center"> ' +
+                        '<div> ' +
+                            '<span class="text-mage font-weight-bold"> ' +
+                                '<span class="d-none d-sm-inline-block">Difficulty:</span> ' +
+                                '<div class="d-flex justify-content-center d-sm-none">Difficulty:</div> ' +
+                            '</span> ' +
+                            '<button class="btn btn-mage font-weight-bold" v-on:click="changeDifficulty(-1)">-1</button> ' +
+                            '<span class="text-mage font-weight-bold ml-1 mr-1">{{difficulty}}</span> ' +
+                            '<button class="btn btn-mage font-weight-bold" v-on:click="changeDifficulty(1)">+1</button> ' +
+                        '</div> ' +
+                    '</div> ' +
+                '</div> ' +
+                '</div> ' +
+        '</div> ' +
+        '<div class="col"> ' +
+            '<div class="card border-mage"> ' +
+                '<div class="card-body bg-mage p-1"> ' +
+                    '<div class="d-flex justify-content-center"> ' +
+                        '<div> ' +
+                            '<span class="text-mage font-weight-bold"> ' +
+                                '<span class="d-none d-sm-inline-block">Threshold:</span> ' +
+                                '<div class="d-flex justify-content-center d-sm-none">Threshold:</div> ' +
+                            '</span> ' +
+                            '<button class="btn btn-mage font-weight-bold" v-on:click="changeThreshold(-1)">-1</button> ' +
+                            '<span class="text-mage font-weight-bold ml-1 mr-1">{{threshold}}</span> ' +
+                            '<button class="btn btn-mage font-weight-bold" v-on:click="changeThreshold(1)">+1</button> ' +
+                        '</div> ' +
+                    '</div> ' +
+                '</div> ' +
+            '</div> ' +
+        '</div> ' +
+    '</div> ' +
+
+    '<div class="row mt-2"> ' +
+        '<div class="col"> ' +
+            '<div class="d-flex justify-content-center"> ' +
+                '<div class="card border-mage"> ' +
+                    '<div class="card-body bg-mage p-1"> ' +
+                        '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-5)">-5</button type="button"> ' +
+                        '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-1)">-1</button type="button"> ' +
+                        '<button type="button" class="btn btn-mage font-weight-bold ml-2 mr-2" v-on:click="rollDice()">{{numDice}} <i class="fas fa-dice-d20"></i></button> ' +
+                        '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(1)">+1</button type="button"> ' +
+                        '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(5)">+5</button type="button"> ' +
+                    '</div> ' +
+                '</div> ' +
+            '</div> ' +
+        '</div> ' +
+    '</div> ' +
+
+    '<div v-if="lastResult"> ' +
+        '<h5 class="text-center mt-1 text-mage font-weight-bold">{{lastResult.outcome}}</h5> ' +
+        '<div class="row"> ' +
+            '<div class="col-md"> ' +
+                '<div class="row"> ' +
+                    '<div class="col"> ' +
+                        '<div class="card border-mage"> ' +
+                            '<div class="card-body bg-mage p-1 text-mage"> ' +
+                                '<span class="text-mage font-weight-bold"> ' +
+                                    '<span v-if="lastResult.botchType == \'original\'">Outcome:</span> ' +
+                                    '<span v-else>Successes:</span> ' +
+                                '</span> {{lastResult.finalSuccesses}} ' +
+                            '</div> ' +
+                        '</div> ' +
+                    '</div> ' +
+                    '<div class="col" v-if="lastResult.botchType == \'original\'"> ' +
+                        '<div class="card border-mage"> ' +
+                            '<div class="card-body bg-mage p-1 text-mage"> ' +
+                                '<span class="text-mage font-weight-bold"> ' +
+                                    'Successes: ' +
+                                '</span> {{lastResult.successes}} ' +
+                            '</div> ' +
+                        '</div> ' +
+                    '</div> ' +
+                '</div> ' +
+            '</div> ' +
+            '<div class="col-md mt-1 mt-md-0"> ' +
+                '<div class="row"> ' +
+                    '<div class="col"> ' +
+                        '<div class="card border-mage"> ' +
+                            '<div class="card-body bg-mage p-1 text-mage"> ' +
+                                '<span class="text-mage font-weight-bold">Ones:</span> {{lastResult.ones}} ' +
+                            '</div> ' +
+                        '</div> ' +
+                    '</div> ' +
+                    '<div class="col"> ' +
+                        '<div class="card border-mage"> ' +
+                            '<div class="card-body bg-mage p-1 text-mage"> ' +
+                                '<span class="text-mage font-weight-bold">Dice:</span> ' +
+                                '<span v-for="f in lastResult.rollOutcomesArray"> ' +
+                                    '<span class="die-success" v-if="f >= lastResult.difficulty">{{f + \' \'}}</span> ' +
+                                    '<span class="die-one" v-else-if="f == 1">{{f + \' \'}}</span> ' +
+                                    '<span v-else>{{f + \' \'}}</span> ' +
+                                '</span> ' +
+                            '</div> ' +
+                        '</div> ' +
+                    '</div> ' +
+                '</div> ' +
+            '</div> ' +
+        '</div> ' +
+    '</div> ' +
+
+    '<div class="d-flex justify-content-around"> ' +
+        '<div v-show="results.length > 0"> ' +
+            '<button class="btn btn-mage-inv mt-1 pt-0 pb-0 font-weight-bold" type="button" v-on:click="toggleHistory"> ' +
+                'History ' +
+                '<span v-show="!showHistory"><i class="fas fa-chevron-right"></i></span> ' +
+                '<span v-show="showHistory"><i class="fas fa-chevron-down"></i></span> ' +
+            '</button> ' +
+            '<button type="button" class="btn btn-mage-inv mt-1 pt-0 pb-0" v-on:click="clearHistory">Clear History</button> ' +
+        '</div> ' +
+    '</div> ' +
+
+    '<div v-show="showHistory && results.length > 0" class="card border-mage mt-1"> ' +
+        '<div class="card-body bg-mage p-1 text-mage"> ' +
+            '<div class="history-holder"> ' +
+                '<table class="table table-sm history-table mb-0"> ' +
+                    '<thead class="thead-mage-inv"> ' +
+                        '<tr> ' +
+                            '<th class="bt-0">Result</th> ' +
+                            '<th class="bt-0 text-center">Outcome</th> ' +
+                            '<th class="bt-0 text-center">Successes</th> ' +
+                            '<th class="bt-0 text-center">Ones</th> ' +
+                            '<th class="bt-0 text-center"># Dice</th> ' +
+                        '</tr> ' +
+                    '</thead> ' +
+                    '<tbody> ' +
+                        '<tr v-for="r in results" class="text-mage"> ' +
+                            '<td>{{r.outcome}}</td> ' +
+                            '<td class="text-center"><span v-if="r.botchType == \'original\'">{{r.finalSuccesses}}</span><span v-else>N/A</span></td> ' +
+                            '<td class="text-center">{{r.successes}}</td> ' +
+                            '<td class="text-center">{{r.ones}}</td> ' +
+                            '<td class="text-center">{{r.numDice}}</td> ' +
+                        '</tr> ' +
+                    '</tbody> ' +
+                '</table> ' +
+            '</div> ' +
+        '</div> ' +
+    '</div> ' +
+
+    '</div>'
+  })
+
+
 let app = null
 app = new Vue({
     el: '#app',
@@ -17,180 +348,41 @@ app = new Vue({
         thresholdMin: 0,
         thresholdMax: 6,
         
-        difficulty: 6,
-        threshold: 0,
         botch: 'original',
         tens: 'regular',
-        numDice: 3,
-        lastResult: null,
-        results: [],
-        showHistory: false
+
+        diceRoller: new DiceRoller()
     },
     methods: {
-        rollDie: function(){
-            return Math.floor(Math.random() * 10) + 1;
-        },
-        clampDifficulty: function(){
-            if(this.difficulty < this.difficultyMin){
-                this.difficulty = this.difficultyMin;
-            } else if(this.difficulty > this.difficultyMax){
-                this.difficulty = this.difficultyMax;
+        clamp: function(theValue, min, max){
+            if(theValue < min){
+                return min;
+            } else if(theValue > max){
+                return max;
             }
-        },
-        clampThreshold: function(){
-            if(this.threshold < this.thresholdMin){
-                this.threshold = this.thresholdMin;
-            } else if(this.threshold > this.thresholdMax){
-                this.threshold = this.thresholdMax;
-            }
-        },
-        clampNumDice: function(){
-            if(this.numDice < 1){
-                this.numDice = 1;
-            }
-        },
-        changeDifficulty: function(amount){
-            this.difficulty += amount;
-            this.clampDifficulty();
-        },
-        changeThreshold: function(amount){
-            this.threshold += amount;
-            this.clampThreshold();
-        },
-        changeNumDice: function(amount){
-            this.numDice += amount;
-            this.clampNumDice();
+
+            return theValue;
         },
         botchModal: function(cmd){
-            console.log('botch')
             $('#botch-picker').modal(cmd);
         },
         setBotch: function (newBotch){
             this.botch = newBotch
             this.botchModal('hide');
+
+            this.diceRoller.setBotch(newBotch);
         },
         tensModal: function(cmd){
-            console.log('tens')
             $('#tens-picker').modal(cmd);
         },
         setTens: function (newTens){
             this.tens = newTens
             this.tensModal('hide');
+
+            this.diceRoller.setTens(newTens);
         },
-        doubleTens: function(){
-            return this.tens === 'double';
-        },
-        doRerollTens: function(){
-            return this.tens === 'reroll';
-        },
-        allowBotch: function(){
-            return this.botch !== 'none';
-        },
-        originalBotch: function(){
-            return this.botch === 'original';
-        },
-        revM20Botch: function(){
-            return this.botch === 'rev-m20';
-        },
-        emptyRollsDict: function(){
-            return {
-                1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
-                6: 0, 7: 0, 8: 0, 9: 0, 10: 0
-            }
-        },
-        mergeDiceDicts: function (first, second){
-            let final = this.emptyRollsDict();
-        
-            for(let face = 1; face < 11; face++){
-                final[face] = first[face] + second[face];
-            }
-        
-            return final;
-        },
-        rollSingleOutcome: function(num){
-            let dict = this.emptyRollsDict();
-            for(let i = 0; i < num; i++){
-                let outcome = this.rollDie();
-                dict[outcome] = dict[outcome] + 1
-            }
-            return dict;
-        },
-        rollTotalOutcome: function(){
-            let newRollDict = this.rollSingleOutcome(this.numDice);
-            let totalRollDict = this.mergeDiceDicts(this.emptyRollsDict(), newRollDict);
-        
-            if(this.doRerollTens()){
-                while(newRollDict[10] > 0){
-                    newRollDict = this.rollSingleOutcome(newRollDict[10]);
-                    totalRollDict = this.mergeDiceDicts(totalRollDict, newRollDict);
-                }
-            }
-        
-            return totalRollDict;
-        },
-        resultDictToArray: function(dict){
-            let arr = [];
-            for(let face = 10; face > 0; face--){
-                for(let n = dict[face]; n > 0; n--){
-                    arr.push(face);
-                }
-            }
-            return arr;
-        },
-        getRollResult: function (){
-            let rollOutcomes = this.rollTotalOutcome();
-            let successes = 0;
-            let ones = rollOutcomes[1];
-        
-            for(let face = this.difficulty; face < 11; face++){
-                successes += rollOutcomes[face];
-            }
-        
-            if(this.doubleTens()){
-                successes += rollOutcomes[10]
-            }
-        
-            let finalSuccesses = successes;
-            let isBotch = false;
-            if(this.allowBotch()){
-                if(this.originalBotch()){
-                    finalSuccesses -= ones;
-                    if(finalSuccesses < 0){
-                        finalSuccesses = 0;
-                    }
-                }
-        
-                if(finalSuccesses <= 0 && ones > 0){
-                    isBotch = true;
-                }
-            }
-        
-            let outcome = isBotch ? 'Botch' : (finalSuccesses > 0 ? 'Success' : 'Fail');
-                
-            return {
-                numDice: this.numDice,
-                rollOutcomes: rollOutcomes,
-                rollOutcomesArray: this.resultDictToArray(rollOutcomes),
-                outcome: outcome,
-                successes: successes,
-                ones: ones,
-                finalSuccesses: finalSuccesses,
-                difficulty : this.difficulty,
-                threshold: this.threshold,
-                botchType: this.botch,
-                tensType: this.tens
-            };
-        },
-        rollDice: function(){
-            let result = this.getRollResult();
-            this.lastResult = result;
-            this.results.splice(0, 0, result);
-        },
-        toggleHistory: function(){
-            this.showHistory = !this.showHistory;
-        },
-        clearHistory: function(){
-            this.results.splice(0, this.results.length);
+        settings: function(){
+            console.log('settings');
         }
     }
 });
