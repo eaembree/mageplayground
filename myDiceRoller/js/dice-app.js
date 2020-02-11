@@ -1,14 +1,14 @@
 function DiceRoller(){
 
     this.botch = 'original';
-    this.threshold = 'regular';
+    this.tens = 'regular';
 
     this.setBotch = function (botch) {
         this.botch = botch;
     }
 
-    this.setThreshold = function (threshold) {
-        this.threshold = threshold;
+    this.setTens = function (tens) {
+        this.tens = tens;
     }
 
     this.doubleTens = function(){
