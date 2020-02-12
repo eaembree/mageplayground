@@ -23,8 +23,18 @@
         <div id="app">
             <h1 class="d-none d-md-block text-center mage-title">Mage Dice Roller <button class="btn btn-sm btn-mage mb-2" data-toggle="modal" data-target="#help-modal"><i class="far fa-question-circle"></i></button> <button class="btn btn-sm btn-mage mb-2" v-on:click="settings"><i class="fas fa-cog"></i></button></h1>
             <h5 class="d-md-none text-center mage-title pt-1 pb-1">Mage Dice Roller <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1" data-toggle="modal" data-target="#help-modal"><i class="far fa-question-circle"></i></button> <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1"  v-on:click="settings"><i class="fas fa-cog"></i></button></h5>
+
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="toggleAppState">
+                        <div v-show="appState == appStates.single">Single Action <small>(<i class="fas fa-arrow-right"></i> Extended)</small></div>
+                        <div v-show="appState == appStates.extended">Extended Action  <small>(<i class="fas fa-arrow-left"></i> Single)</small></div>
+                    </button>
+                </div>
+            </div>
+
             <div v-cloak>
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col">
                         <button v-for="b in botchOptions" class="btn btn-block btn-mage-inv font-weight-bold" v-if="b.value == botch"
                             v-on:click="botchModal('show')">
@@ -38,35 +48,75 @@
                     </div>
                 </div>
 
-                <single-action
-                    :difficulty-min="difficultyMin" :difficulty-max="difficultyMax"
-                    :threshold-min="thresholdMin" :threshold-max="thresholdMax"
-                    :clamp="clamp"
-                    :botch-options="botchOptions" :botch="botch"
-                    :tens-options="tensOptions" :tens="tens"
-                    :dice-roller="diceRoller"></single-action>
+                <div v-show="appState == appStates.single">
+                    <single-action
+                        :difficulty-min="difficultyMin" :difficulty-max="difficultyMax"
+                        :threshold-min="thresholdMin" :threshold-max="thresholdMax"
+                        :clamp="clamp"
+                        :botch-options="botchOptions" :botch="botch"
+                        :tens-options="tensOptions" :tens="tens"
+                        :dice-roller="diceRoller"></single-action>
+                </div>
+                <div v-show="appState == appStates.extended">
+                    <extended-action
+                        :difficulty-min="difficultyMin" :difficulty-max="difficultyMax"
+                        :threshold-min="thresholdMin" :threshold-max="thresholdMax"
+                        :clamp="clamp"
+                        :botch-options="botchOptions" :botch="botch"
+                        :tens-options="tensOptions" :tens="tens"
+                        :dice-roller="diceRoller"></extended-action>
+                </div>
+            </div>
 
-                <div class="modal" tabindex="-1" role="dialog" id="botch-picker">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <h5 class="text-center">Choose Botch Type</h5>
-                                <button v-for="b in botchOptions" class="btn btn-block"
-                                    v-bind:class="{ 'btn-mage-inv font-weight-bold': b.value == botch, 'btn-outline-mage-inv': b.value != botch }"
-                                    v-on:click="setBotch(b.value)">
-                                    <span v-if="b.value == botch"><i class="fas fa-check"></i> </span>
-                                    {{b.display}}
-                                </button>
-                            </div>
+            <div class="modal" tabindex="-1" role="dialog" id="botch-picker">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h5 class="text-center">Choose Botch Type</h5>
+                            <button v-for="b in botchOptions" class="btn btn-block"
+                                v-bind:class="{ 'btn-mage-inv font-weight-bold': b.value == botch, 'btn-outline-mage-inv': b.value != botch }"
+                                v-on:click="setBotch(b.value)">
+                                <span v-if="b.value == botch"><i class="fas fa-check"></i> </span>
+                                {{b.display}}
+                            </button>
                         </div>
                     </div>
                 </div>
-    
-                <div class="modal" tabindex="-1" role="dialog" id="tens-picker">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <h5 class="text-center">Choose 10s Type</h5>
+            </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="tens-picker">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h5 class="text-center">Choose 10s Type</h5>
+                            <button v-for="t in tensOptions" class="btn btn-block"
+                                v-bind:class="{ 'btn-mage-inv font-weight-bold': t.value == tens, 'btn-outline-mage-inv': t.value != tens }"
+                                v-on:click="setTens(t.value)">
+                                <span v-if="t.value == tens"><i class="fas fa-check"></i> </span>
+                                {{t.display}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="settings-modal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h5><u>Settings</u></h5>
+                            <div class="mt-1">
+                                <h5 class="text-center">Botch Type</h5>
+                            <button v-for="b in botchOptions" class="btn btn-block"
+                                v-bind:class="{ 'btn-mage-inv font-weight-bold': b.value == botch, 'btn-outline-mage-inv': b.value != botch }"
+                                v-on:click="setBotch(b.value)">
+                                <span v-if="b.value == botch"><i class="fas fa-check"></i> </span>
+                                {{b.display}}
+                            </button>
+                            </div>
+
+                            <div class="mt-3">
+                                <h5 class="text-center">10s Type</h5>
                                 <button v-for="t in tensOptions" class="btn btn-block"
                                     v-bind:class="{ 'btn-mage-inv font-weight-bold': t.value == tens, 'btn-outline-mage-inv': t.value != tens }"
                                     v-on:click="setTens(t.value)">
@@ -74,6 +124,26 @@
                                     {{t.display}}
                                 </button>
                             </div>
+
+                            <div class="mt-3">
+                                <h5 class="text-center">Action Type</h5>
+                                <button class="btn btn-block"
+                                    v-bind:class="{ 'btn-mage-inv font-weight-bold': appState == appStates.single, 'btn-outline-mage-inv': appState != appStates.single }"
+                                    v-on:click="goToSingleState">
+                                    <span v-if="appState == appStates.single"><i class="fas fa-check"></i> </span>
+                                    Single
+                                </button>
+
+                                <button class="btn btn-block"
+                                    v-bind:class="{ 'btn-mage-inv font-weight-bold': appState == appStates.extended, 'btn-outline-mage-inv': appState != appStates.extended }"
+                                    v-on:click="goToExtendedState">
+                                    <span v-if="appState == appStates.extended"><i class="fas fa-check"></i> </span>
+                                    Extended
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -87,16 +157,18 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                             </button>
-                          </div>
+                        </div>
                         <div class="modal-body">
                             <p>Click the <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">Botch</button> or <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">10s</button> buttons to change the botch or 10s settings, respectively.</p>
                             <p>Click the <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">-</button> and <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">+</button> buttons to decrease or increase the corresponding number.</p>
                             <p>Click the <button type="button" class="btn btn-sm btn-mage font-weight-bold pt-0 pb-0"><i class="fas fa-dice-d20"></i></button> button to roll the number of dice indicated and see the outcome.</p>
                             <p>Expand the history of rolls with the <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">History</button> button which becomes visible after the first roll. Clear history with the <button type="button" class="btn btn-mage-inv mt-1 pt-0 pb-0">Clear History</button> button.</p>
+                            <p>Toggle between Single and Extended action types by clicking the <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">Single</button> and <button type="button" class="btn btn-sm btn-mage-inv font-weight-bold pt-0 pb-0">Extended</button> buttons.</p>
+                            <p>Click the <button class="btn btn-sm btn-mage pt-0 pb-0"><i class="fas fa-cog"></i></button> button to bring up settings where you can change botch, tens, and action type all at once.</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -118,7 +190,10 @@
         integrity="sha256-ngFW3UnAN0Tnm76mDuu7uUtYEcG3G5H1+zioJw3t+68=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/js/all.min.js"
         integrity="sha256-0vuk8LXoyrmCjp1f0O300qo1M75ZQyhH9X3J6d+scmk=" crossorigin="anonymous"></script>
-    <script src="js/dice-app.js?v=3"></script>
+        <script src="js/dice-roller.js?v=4"></script>
+        <script src="js/single-action-component.js?v=4"></script>
+        <script src="js/extended-action-component.js?v=4"></script>
+        <script src="js/dice-app.js?v=4"></script>
 </body>
 
 </html>
