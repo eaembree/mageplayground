@@ -25,14 +25,11 @@ Vue.component('extended-action', {
         state: 'setup',
         states: {
             setup: 'setup',
-            rolling: 'rolling'
-        }
+            rolling: 'rolling',
+        },
+        success: false,
+        failure: false
       }
-    },
-    computed: {
-        hasAnotherRoll: function(){
-            this.results.length < this.numRolls;
-        }
     },
     methods: {
         changeDifficulty: function(amount){
@@ -62,6 +59,8 @@ Vue.component('extended-action', {
         },
         reset: function(){
             if(this.state == this.states.rolling){
+                this.success = false;
+                this.failure = false;
                 this.state = this.states.setup;
                 this.results.splice(0, this.results.length);
             }
@@ -79,6 +78,8 @@ Vue.component('extended-action', {
             thisResult.runningSuccesses = this.getLastRunningSuccesses() + thisResult.finalSuccesses;
             thisResult.runningWillpowerSpent = this.getLastRunningWillpowerSpent() + (applyWillpower ? 1 : 0);
             this.results.splice(0, 0, thisResult);
+
+            this.trySuccessFailure();
         },
         getLastRunningWillpowerSpent: function() {
             if(this.results.length === 0) return 0;
@@ -87,6 +88,27 @@ Vue.component('extended-action', {
         getLastRunningSuccesses: function() {
             if(this.results.length === 0) return 0;
             return this.results[0].runningSuccesses;
+        },
+        trySuccessFailure: function() {
+            if(this.results.length === 0) return;
+            
+            // TODO - Check botch
+
+            if(this.success || this.failure) return;
+
+            if(this.results.length >= this.numRolls) {
+                // Probably failure but check successes
+                if(this.results[0].runningSuccesses >= this.successesNeeded) {
+                    this.success = true;
+                } else {
+                    this.failure = true;
+                }
+            } else {
+                // Might have succeeded already
+                if(this.results[0].runningSuccesses >= this.successesNeeded) {
+                    this.success = true;
+                }
+            }
         }
     },
     template: '<div> ' +
@@ -218,16 +240,23 @@ Vue.component('extended-action', {
 
     '<div v-show="state == states.rolling"> ' +
         '<hr class="mb-2 mt-2"/>' +
-        '<p class="h5 text-center mb-1 mt-0 text-mage font-weight-bold"><u>Roll</u></p>' +
-        '<div class="row mb-2">' +
-            '<div class="col"> ' +
-                '<button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="rollNormal">Normal</button>' +
-            '</div>' +
-            '<div class="col"> ' +
-                '<button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="rollWithWillpower">With Willpower</button>' +
+        '<div v-show="failure">' +
+            '<div class="alert alert-danger">FAILED</div>' +
+        '</div>' +
+        '<div v-show="!failure && this.results.length < numRolls">' +
+            '<p class="h5 text-center mb-1 mt-0 text-mage font-weight-bold"><u>Roll</u></p>' +
+            '<div class="row mb-2">' +
+                '<div class="col"> ' +
+                    '<button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="rollNormal">Normal</button>' +
+                '</div>' +
+                '<div class="col"> ' +
+                    '<button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="rollWithWillpower">With Willpower</button>' +
+                '</div>' +
             '</div>' +
         '</div>' +
-        
+        '<div v-show="success">' +
+            '<div class="alert alert-success">SUCCESS</div>' +
+        '</div>' +
         
 
         '<div v-show="results.length > 0"> '+
