@@ -1,3 +1,17 @@
+function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, successes, ones, finalSuccesses, difficulty, threshold, botchType, tensType){
+    this.numDice = 0;
+    this.rollOutcomes = rollOutcomes;
+    this.rollOutcomesArray = rollOutcomesArray;
+    this.outcome = outcome;
+    this.successes = successes;
+    this.ones = ones;
+    this.finalSuccesses = finalSuccesses;
+    this.difficulty = difficulty;
+    this.threshold = threshold;
+    this.botchType = botchType;
+    this.tensType = tensType;
+}
+
 function DiceRoller(){
 
     this.botch = 'original';
@@ -85,7 +99,7 @@ function DiceRoller(){
         return arr;
     }
 
-    this.getRollResult = function (numDice, difficulty, threshold){
+    this.getSingleActionResult = function (numDice, difficulty, threshold){
         let rollOutcomes = this.rollTotalOutcome(numDice);
         let successes = 0;
         let ones = rollOutcomes[1];
@@ -115,19 +129,19 @@ function DiceRoller(){
 
         let minSuccesses = threshold > 0 ? threshold : 1;
         let outcome = isBotch ? 'Botch' : (finalSuccesses >= minSuccesses ? 'Success' : 'Fail');
-            
-        return {
-            numDice: numDice,
-            rollOutcomes: rollOutcomes,
-            rollOutcomesArray: this.resultDictToArray(rollOutcomes),
-            outcome: outcome,
-            successes: successes,
-            ones: ones,
-            finalSuccesses: finalSuccesses,
-            difficulty : difficulty,
-            threshold: threshold,
-            botchType: this.botch,
-            tensType: this.tens
-        };
+
+        return new SingleActionResult(
+            numDice,
+            rollOutcomes,
+            this.resultDictToArray(rollOutcomes),
+            outcome,
+            successes,
+            ones,
+            finalSuccesses,
+            difficulty,
+            threshold,
+            this.botch,
+            this.tens
+       );
     }
 }

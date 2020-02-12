@@ -60,7 +60,8 @@
                 <div v-show="appState == appStates.extended">
                     <extended-action
                         :difficulty-min="difficultyMin" :difficulty-max="difficultyMax"
-                        :threshold-min="thresholdMin" :threshold-max="thresholdMax"
+                        :num-rolls-min="2" :num-rolls-max="50"
+                        :successes-needed-min="1" :successes-needed-max="100"
                         :clamp="clamp"
                         :botch-options="botchOptions" :botch="botch"
                         :tens-options="tensOptions" :tens="tens"
