@@ -36,7 +36,7 @@ Vue.component('single-action', {
         },
         rollDice: function(){
             console.log(this.numDice + ' ' + this.difficulty + ' ' + this.threshold)
-            let result = this.diceRoller.getSingleActionResult(this.numDice, this.difficulty, this.threshold);
+            let result = this.diceRoller.getSingleActionResult(this.numDice, this.difficulty, this.threshold, false);
             this.lastResult = result;
             this.results.splice(0, 0, result);
         },

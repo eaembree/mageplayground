@@ -1,5 +1,6 @@
-function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, successes, ones, finalSuccesses, difficulty, threshold, botchType, tensType){
-    this.numDice = 0;
+function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, successes, ones, finalSuccesses,
+                            difficulty, threshold, botchType, tensType, usedWillpower) {
+    this.numDice = numDice;
     this.rollOutcomes = rollOutcomes;
     this.rollOutcomesArray = rollOutcomesArray;
     this.outcome = outcome;
@@ -10,6 +11,7 @@ function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, s
     this.threshold = threshold;
     this.botchType = botchType;
     this.tensType = tensType;
+    this.usedWillpower = usedWillpower;
 }
 
 function DiceRoller(){
@@ -99,7 +101,7 @@ function DiceRoller(){
         return arr;
     }
 
-    this.getSingleActionResult = function (numDice, difficulty, threshold){
+    this.getSingleActionResult = function (numDice, difficulty, threshold, applyWillpower) {
         let rollOutcomes = this.rollTotalOutcome(numDice);
         let successes = 0;
         let ones = rollOutcomes[1];
@@ -114,14 +116,21 @@ function DiceRoller(){
     
         let finalSuccesses = successes;
         let isBotch = false;
+
+        // TODO: This is clearly not correct. What is the difference in rules between original and rev/m20? I obviously don't know.
+        if(this.originalBotch() || this.revM20Botch()) {
+            finalSuccesses -= ones;
+        }
+
+        if(finalSuccesses < 0){
+            finalSuccesses = 0;
+        }
+
+        if(applyWillpower) {
+            finalSuccesses += 1;
+        }
+
         if(this.allowBotch()){
-            if(this.originalBotch()){
-                finalSuccesses -= ones;
-                if(finalSuccesses < 0){
-                    finalSuccesses = 0;
-                }
-            }
-    
             if(finalSuccesses <= 0 && ones > 0){
                 isBotch = true;
             }
@@ -141,7 +150,8 @@ function DiceRoller(){
             difficulty,
             threshold,
             this.botch,
-            this.tens
+            this.tens,
+            applyWillpower
        );
     }
 }

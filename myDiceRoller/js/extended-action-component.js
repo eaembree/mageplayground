@@ -22,7 +22,6 @@ Vue.component('extended-action', {
         lastResult: null,
         results: [],
         showHistory: false,
-        applyWillpowerOnRoll: false,
         state: 'setup',
         states: {
             setup: 'setup',
@@ -59,23 +58,6 @@ Vue.component('extended-action', {
             if(this.state == this.states.setup){
                 this.results.splice(0, this.results.length);
                 this.state = this.states.rolling;
-
-                // TODO: remove hack
-                let runningSuccesses = 0;
-                let runningWillpowerSpent = 0;
-                if(this.results.length === 0){
-                    for(let i = 0; i < 10; i++){
-                        let thisResult = this.diceRoller.getSingleActionResult(this.numDice, this.difficulty, 0);
-                        thisResult.rollNumber = i+1;
-
-                        runningSuccesses += thisResult.finalSuccesses;
-                        runningWillpowerSpent += 1; // HACK
-
-                        thisResult.runningSuccesses = runningSuccesses;
-                        thisResult.runningWillpowerSpent = runningWillpowerSpent;
-                        this.results.splice(0, 0, thisResult);
-                    }
-                }
             }
         },
         reset: function(){
@@ -84,11 +66,27 @@ Vue.component('extended-action', {
                 this.results.splice(0, this.results.length);
             }
         },
-        roll: function(){
-            if(this.state == this.states.rolling){
-                console.log(this.applyWillpowerOnRoll);
-                console.log('will? ' + this.applyWillpowerOnRoll);
-            }
+        rollNormal: function(){
+            this.rollActual(false);
+        },
+        rollWithWillpower: function(){
+            this.rollActual(true);
+        },
+        rollActual: function(applyWillpower) {
+            let thisResult = this.diceRoller.getSingleActionResult(this.numDice, this.difficulty, 0, applyWillpower);
+            thisResult.rollNumber = this.results.length + 1;
+
+            thisResult.runningSuccesses = this.getLastRunningSuccesses() + thisResult.finalSuccesses;
+            thisResult.runningWillpowerSpent = this.getLastRunningWillpowerSpent() + (applyWillpower ? 1 : 0);
+            this.results.splice(0, 0, thisResult);
+        },
+        getLastRunningWillpowerSpent: function() {
+            if(this.results.length === 0) return 0;
+            return this.results[0].runningWillpowerSpent;
+        },
+        getLastRunningSuccesses: function() {
+            if(this.results.length === 0) return 0;
+            return this.results[0].runningSuccesses;
         }
     },
     template: '<div> ' +
@@ -130,6 +128,23 @@ Vue.component('extended-action', {
                 '</div> ' +
             '</div> ' +
         '</div> ' +
+
+        '<div class="row mt-2"> ' +
+            '<div class="col"> ' +
+                '<div class="d-flex justify-content-center"> ' +
+                    '<div class="card border-mage"> ' +
+                        '<div class="card-body bg-mage p-1"> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-5)">-5</button type="button"> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-1)">-1</button type="button"> ' +
+                            '<button type="button" class="btn btn-mage font-weight-bold ml-2 mr-2" v-on:click="rollDice()">{{numDice}} <i class="fas fa-dice-d20"></i></button> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(1)">+1</button type="button"> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(5)">+5</button type="button"> ' +
+                        '</div> ' +
+                    '</div> ' +
+                '</div> ' +
+            '</div> ' +
+        '</div> ' +
+
         '<div class="row mt-2"> '+
             '<div class="col"> ' +
                 '<div class="card border-mage"> ' +
@@ -156,59 +171,60 @@ Vue.component('extended-action', {
                 '</div> ' +
             '</div>' +
         '</div> ' +
+
     '</div> ' +
 
     '<div v-show="state == states.rolling"> '+
-        '<div class="row mt-2"> ' +
-            '<div class="col"> ' +
-                '<div class="card border-mage"> ' +
-                    '<div class="card-body bg-mage p-1"> ' +
+        '<div class="card border-mage mt-2">' +
+            '<div class="card-body bg-mage p-1">'+
+                '<div class="row">' +
+                    '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
                             'Difficulty: <span class="ml-1 mr-1">{{difficulty}}</span> ' +
                         '</div> ' +
-                    '</div> ' +
-                '</div> ' +
-            '</div> ' +
-            '<div class="col"> ' +
-                '<div class="card border-mage"> ' +
-                    '<div class="card-body bg-mage p-1"> ' +
+                    '</div>' +
+                    '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
                             '# Rolls: <span class="ml-1 mr-1">{{numRolls}}</span> ' +
                         '</div> ' +
-                    '</div> ' +
-                '</div> ' +
-            '</div> ' +
-        '</div> ' +
-
-        '<div class="row mt-2"> '+
-            '<div class="col"> '+
-                '<div class="card border-mage"> ' +
-                    '<div class="card-body bg-mage p-1"> ' +
+                    '</div>' +
+                '</div>' +
+                '<div class="row">' +
+                    '<div class="col">' +
+                        '<div class="d-flex justify-content-center text-mage">'+
+                            '<span><span class="font-weight-bold">Rolling {{numDice}}</span> <i class="fas fa-dice-d20"></i></span>'+
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="row">' +
+                    '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
-                            'Successes Needed: <span class="ml-1 mr-1">{{successesNeeded}}</span> ' +
+                            '<div>' +
+                                'Successes Needed: <span class="ml-1 mr-1">{{successesNeeded}}</span> ' +
+                                '<button class="btn btn-sm pt-0 pt-md-1 pb-0 pb-md-1 btn-mage-inv font-weight-bold mt-2 mb-2" v-show="state == states.rolling" v-on:click="reset">Reset</button>' +
+                            '</div>' +
                         '</div> ' +
-                    '</div> ' +
-                '</div> ' +
-            '</div> '+
-        '</div> ' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
     '</div> ' +
 
     '<div class="row"> ' +
         '<div class="col-10 offset-1"> '+
             '<button class="btn btn-block btn-mage-inv font-weight-bold mt-2" v-show="state == states.setup" v-on:click="start">Start</button>' +
-            '<button class="btn btn-block btn-mage-inv font-weight-bold mt-2 mb-2" v-show="state == states.rolling" v-on:click="reset">Reset</button>' +
         '</div>' +
     '</div>' +
 
     '<div v-show="state == states.rolling"> ' +
         '<hr class="mb-2 mt-2"/>' +
         '<p class="h5 text-center mb-1 mt-0 text-mage font-weight-bold"><u>Roll</u></p>' +
-        '<div class="row">' +
+        '<div class="row mb-2">' +
             '<div class="col"> ' +
-                '<button class="btn btn-block btn-mage-inv font-weight-bold">Normal</button>' +
+                '<button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="rollNormal">Normal</button>' +
             '</div>' +
             '<div class="col"> ' +
-                '<button class="btn btn-block btn-mage-inv font-weight-bold mb-2">With Willpower</button>' +
+                '<button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="rollWithWillpower">With Willpower</button>' +
             '</div>' +
         '</div>' +
         
@@ -240,14 +256,14 @@ Vue.component('extended-action', {
                     '</div>' +
                     '<div class="row">' +
                         '<div class="col-sm">' +
-                            '<div class="card border-mage">' +
+                            '<div class="card border-mage mb-1">' +
                                 '<div class="card-body bg-mage p-1 text-mage">' +
                                     '<span class="font-weight-bold">Total Successes:</span> {{r.runningSuccesses}}' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
                         '<div class="col-sm">' +
-                            '<div class="card border-mage">' +
+                            '<div class="card border-mage mb-1">' +
                                 '<div class="card-body bg-mage p-1 text-mage">' +
                                     '<span class="font-weight-bold">Willpower Spent:</span> {{r.runningWillpowerSpent}}' +
                                 '</div>' +
@@ -255,10 +271,10 @@ Vue.component('extended-action', {
                         '</div>' +
                     '</div>' +    
                     '<div class="row"> ' +
-                        '<div class="col-md mt-1 mt-md-0"> ' +
+                        '<div class="col-md"> ' +
                             '<div class="row"> ' +
                                 '<div class="col"> ' +
-                                    '<div class="card border-mage"> ' +
+                                    '<div class="card border-mage mb-1"> ' +
                                         '<div class="card-body bg-mage p-1 text-mage"> ' +
                                             '<span class="text-mage font-weight-bold"> ' +
                                                 '<span v-if="r.botchType == \'original\'">Outcome:</span> ' +
@@ -268,7 +284,7 @@ Vue.component('extended-action', {
                                     '</div> ' +
                                 '</div> ' +
                                 '<div class="col" v-if="r.botchType == \'original\'"> ' +
-                                    '<div class="card border-mage"> ' +
+                                    '<div class="card border-mage mb-1"> ' +
                                         '<div class="card-body bg-mage p-1 text-mage"> ' +
                                             '<span class="text-mage font-weight-bold"> ' +
                                                 'Successes: ' +
@@ -278,17 +294,17 @@ Vue.component('extended-action', {
                                 '</div> ' +
                             '</div> ' +
                         '</div> ' +
-                        '<div class="col-md mt-1 mt-md-0"> ' +
+                        '<div class="col-md"> ' +
                             '<div class="row"> ' +
                                 '<div class="col"> ' +
-                                    '<div class="card border-mage"> ' +
+                                    '<div class="card border-mage mb-1"> ' +
                                         '<div class="card-body bg-mage p-1 text-mage"> ' +
                                             '<span class="text-mage font-weight-bold">Ones:</span> {{r.ones}} ' +
                                         '</div> ' +
                                     '</div> ' +
                                 '</div> ' +
                                 '<div class="col"> ' +
-                                    '<div class="card border-mage"> ' +
+                                    '<div class="card border-mage mb-1"> ' +
                                         '<div class="card-body bg-mage p-1 text-mage"> ' +
                                             '<span class="text-mage font-weight-bold">Dice:</span> ' +
                                             '<span v-for="f in r.rollOutcomesArray"> ' +
@@ -301,6 +317,7 @@ Vue.component('extended-action', {
                                 '</div> ' +
                             '</div> ' +
                         '</div> ' +
+                        //'<p class="text-mage">{{r}}</p>' +
                     '</div> ' +
                 '</div> ' +
             '</div> ' +
