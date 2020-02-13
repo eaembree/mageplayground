@@ -20,9 +20,12 @@ app = new Vue({
         difficultyMax: 10,
         thresholdMin: 0,
         thresholdMax: 6,
-        
+
+        hideBotchAndTensButtons: false,
         botch: 'original',
+        botchText: '',
         tens: 'regular',
+        tensText: '',
 
         diceRoller: new DiceRoller(),
 
@@ -32,6 +35,10 @@ app = new Vue({
         },
 
         appState: 'single'
+    },
+    created: function(){
+        this.updateBotchText();
+        this.updateTensText();
     },
     methods: {
         clamp: function(theValue, min, max){
@@ -43,23 +50,51 @@ app = new Vue({
 
             return theValue;
         },
+        hideBotchAndTens: function(){
+            this.hideBotchAndTensButtons = true;
+        },
+        showBotchAndTens: function(){
+            this.hideBotchAndTensButtons = false;
+        },
         botchModal: function(cmd){
             $('#botch-picker').modal(cmd);
         },
         setBotch: function (newBotch){
-            this.botch = newBotch
+            this.botch = newBotch;
+            this.updateBotchText();
             this.botchModal('hide');
 
             this.diceRoller.setBotch(newBotch);
+        },
+        updateBotchText: function(){
+            for(let i = 0; i < this.botchOptions.length; i++) {
+                if(this.botch === this.botchOptions[i].value){
+                    this.botchText = this.botchOptions[i].display;
+                    return;
+                }
+            }
+
+            this.botchText = 'BAD BOTCH TYPE';
         },
         tensModal: function(cmd){
             $('#tens-picker').modal(cmd);
         },
         setTens: function (newTens){
-            this.tens = newTens
+            this.tens = newTens;
+            this.updateTensText();
             this.tensModal('hide');
 
             this.diceRoller.setTens(newTens);
+        },
+        updateTensText: function(){
+            for(let i = 0; i < this.tensOptions.length; i++) {
+                if(this.tens === this.tensOptions[i].value){
+                    this.tensText = this.tensOptions[i].display;
+                    return;
+                }
+            }
+
+            this.tensText = 'BAD TENS TYPE';
         },
         settings: function(){
             $('#settings-modal').modal('show');

@@ -9,8 +9,10 @@ Vue.component('extended-action', {
         clamp: Function,
         botchOptions: Array,
         botch: String,
+        botchText: String,
         tensOptions: Array,
         tens: String,
+        tensText: String,
         diceRoller: Object
     },
     data: function () {
@@ -61,6 +63,7 @@ Vue.component('extended-action', {
             if(this.state == this.states.setup){
                 this.results.splice(0, this.results.length);
                 this.state = this.states.rolling;
+                this.$emit('hide-botch-and-tens');
             }
         },
         reset: function(){
@@ -70,6 +73,7 @@ Vue.component('extended-action', {
                 this.state = this.states.setup;
                 this.results.splice(0, this.results.length);
                 this.lastResult = null;
+                this.$emit('show-botch-and-tens');
             }
         },
         rollNormal: function(){
@@ -200,6 +204,19 @@ Vue.component('extended-action', {
                 '<div class="row">' +
                     '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
+                            'Botch: <span class="ml-1 mr-1">{{botchText}}</span> ' +
+                        '</div> ' +
+                    '</div>' +
+                    '<div class="col">' +
+                        '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
+                            '10s: <span class="ml-1 mr-1">{{tensText}}</span> ' +
+                        '</div> ' +
+                    '</div>' +
+                '</div>' +
+
+                '<div class="row">' +
+                    '<div class="col">' +
+                        '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
                             'Difficulty: <span class="ml-1 mr-1">{{difficulty}}</span> ' +
                         '</div> ' +
                     '</div>' +
@@ -215,7 +232,7 @@ Vue.component('extended-action', {
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
                             '<div>' +
                                 'Successes Needed: <span class="ml-1 mr-1">{{successesNeeded}}</span> ' +
-                                '<button class="btn btn-sm pt-0 pt-md-1 pb-0 pb-md-1 btn-mage-inv font-weight-bold mt-2 mb-2" v-show="state == states.rolling" v-on:click="reset">Reset</button>' +
+                                '<button class="btn btn-sm pt-0 pt-md-1 pb-0 pb-md-1 btn-mage-inv font-weight-bold " v-show="state == states.rolling" v-on:click="reset">Reset</button>' +
                             '</div>' +
                         '</div> ' +
                     '</div>' +
