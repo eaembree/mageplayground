@@ -103,36 +103,36 @@ function DiceRoller(){
 
     this.getSingleActionResult = function (numDice, difficulty, threshold, applyWillpower) {
         let rollOutcomes = this.rollTotalOutcome(numDice);
-        let successes = 0;
+        let rolledSuccesses = 0;
         let ones = rollOutcomes[1];
     
         for(let face = difficulty; face < 11; face++){
-            successes += rollOutcomes[face];
+            rolledSuccesses += rollOutcomes[face];
         }
     
         if(this.doubleTens()){
-            successes += rollOutcomes[10]
+            rolledSuccesses += rollOutcomes[10]
         }
     
-        let finalSuccesses = successes;
-        let isBotch = false;
-
-        // TODO: This is clearly not correct. What is the difference in rules between original and rev/m20? I obviously don't know.
-        if(this.originalBotch() || this.revM20Botch()) {
-            finalSuccesses -= ones;
-        }
+        let finalSuccesses = rolledSuccesses - ones;
 
         if(finalSuccesses < 0){
             finalSuccesses = 0;
         }
 
+        let isBotch = false;
+
         if(applyWillpower) {
             finalSuccesses += 1;
         }
 
-        if(this.allowBotch()){
-            if(finalSuccesses <= 0 && ones > 0){
+        if(finalSuccesses <= 0){
+            if(this.originalBotch()){
                 isBotch = true;
+            } else if(this.revM20Botch()){
+                if(rolledSuccesses <= 0 && ones > 0){
+                    isBotch = true;
+                }
             }
         }
 
@@ -144,7 +144,7 @@ function DiceRoller(){
             rollOutcomes,
             this.resultDictToArray(rollOutcomes),
             outcome,
-            successes,
+            rolledSuccesses,
             ones,
             finalSuccesses,
             difficulty,
