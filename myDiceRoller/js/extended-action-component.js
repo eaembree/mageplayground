@@ -50,6 +50,12 @@ Vue.component('extended-action', {
         },
         removeLastResult: function(){
             this.results.splice(0, 1);
+            if(this.results.length > 0){
+                this.lastResult = this.results[0];
+            } else {
+                this.lastResult = null;
+                this.reset();
+            }
         },
         start: function(){
             if(this.state == this.states.setup){
@@ -63,6 +69,7 @@ Vue.component('extended-action', {
                 this.failure = false;
                 this.state = this.states.setup;
                 this.results.splice(0, this.results.length);
+                this.lastResult = null;
             }
         },
         rollNormal: function(){
@@ -73,13 +80,23 @@ Vue.component('extended-action', {
         },
         rollActual: function(applyWillpower) {
             let thisResult = this.diceRoller.getSingleActionResult(this.numDice, this.difficulty, 0, applyWillpower);
+            thisResult.runningStatus = '';
             thisResult.rollNumber = this.results.length + 1;
 
             thisResult.runningSuccesses = this.getLastRunningSuccesses() + thisResult.finalSuccesses;
             thisResult.runningWillpowerSpent = this.getLastRunningWillpowerSpent() + (applyWillpower ? 1 : 0);
             this.results.splice(0, 0, thisResult);
+            this.lastResult = thisResult;
 
-            this.trySuccessFailure();
+            if(thisResult.isBotch()) {
+                thisResult.runningStatus = 'botch';
+            }
+            else if(thisResult.runningSuccesses >= this.successesNeeded) {
+                thisResult.runningStatus = 'success';
+            }
+            else if(this.results.length >= this.numRolls) {
+                thisResult.runningStatus = 'failure';
+            }
         },
         getLastRunningWillpowerSpent: function() {
             if(this.results.length === 0) return 0;
@@ -88,27 +105,6 @@ Vue.component('extended-action', {
         getLastRunningSuccesses: function() {
             if(this.results.length === 0) return 0;
             return this.results[0].runningSuccesses;
-        },
-        trySuccessFailure: function() {
-            if(this.results.length === 0) return;
-            
-            // TODO - Check botch
-
-            if(this.success || this.failure) return;
-
-            if(this.results.length >= this.numRolls) {
-                // Probably failure but check successes
-                if(this.results[0].runningSuccesses >= this.successesNeeded) {
-                    this.success = true;
-                } else {
-                    this.failure = true;
-                }
-            } else {
-                // Might have succeeded already
-                if(this.results[0].runningSuccesses >= this.successesNeeded) {
-                    this.success = true;
-                }
-            }
         }
     },
     template: '<div> ' +
@@ -151,22 +147,6 @@ Vue.component('extended-action', {
             '</div> ' +
         '</div> ' +
 
-        '<div class="row mt-2"> ' +
-            '<div class="col"> ' +
-                '<div class="d-flex justify-content-center"> ' +
-                    '<div class="card border-mage"> ' +
-                        '<div class="card-body bg-mage p-1"> ' +
-                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-5)">-5</button type="button"> ' +
-                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-1)">-1</button type="button"> ' +
-                            '<button type="button" class="btn btn-mage font-weight-bold ml-2 mr-2" v-on:click="rollDice()">{{numDice}} <i class="fas fa-dice-d20"></i></button> ' +
-                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(1)">+1</button type="button"> ' +
-                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(5)">+5</button type="button"> ' +
-                        '</div> ' +
-                    '</div> ' +
-                '</div> ' +
-            '</div> ' +
-        '</div> ' +
-
         '<div class="row mt-2"> '+
             '<div class="col"> ' +
                 '<div class="card border-mage"> ' +
@@ -194,6 +174,24 @@ Vue.component('extended-action', {
             '</div>' +
         '</div> ' +
 
+        '<div class="row mt-2"> ' +
+            '<div class="col"> ' +
+                '<div class="d-flex justify-content-center"> ' +
+                    '<div class="card border-mage"> ' +
+                        '<div class="card-body bg-mage p-1"> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-5)">-5</button type="button"> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(-1)">-1</button type="button"> ' +
+                            '<button type="button" class="btn btn-mage font-weight-bold ml-2 mr-2" v-on:click="start">{{numDice}} <i class="fas fa-dice-d20"></i></button> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(1)">+1</button type="button"> ' +
+                            '<button type="button" class="btn btn-mage-inv font-weight-bold" v-on:click="changeNumDice(5)">+5</button type="button"> ' +
+                        '</div> ' +
+                    '</div> ' +
+                '</div> ' +
+            '</div> ' +
+        '</div> ' +
+
+        
+
     '</div> ' +
 
     '<div v-show="state == states.rolling"> '+
@@ -211,13 +209,7 @@ Vue.component('extended-action', {
                         '</div> ' +
                     '</div>' +
                 '</div>' +
-                '<div class="row">' +
-                    '<div class="col">' +
-                        '<div class="d-flex justify-content-center text-mage">'+
-                            '<span><span class="font-weight-bold">Rolling {{numDice}}</span> <i class="fas fa-dice-d20"></i></span>'+
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
+
                 '<div class="row">' +
                     '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
@@ -228,22 +220,25 @@ Vue.component('extended-action', {
                         '</div> ' +
                     '</div>' +
                 '</div>' +
+
+                '<div class="row">' +
+                    '<div class="col">' +
+                        '<div class="d-flex justify-content-center text-mage">'+
+                            '<span><span class="font-weight-bold">Rolling {{numDice}}</span> <i class="fas fa-dice-d20"></i></span>'+
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
             '</div>' +
         '</div>' +
     '</div> ' +
 
-    '<div class="row"> ' +
-        '<div class="col-10 offset-1"> '+
-            '<button class="btn btn-block btn-mage-inv font-weight-bold mt-2" v-show="state == states.setup" v-on:click="start">Start</button>' +
-        '</div>' +
-    '</div>' +
-
     '<div v-show="state == states.rolling"> ' +
+        //'<p>{{lastResult}}</p>'+    
         '<hr class="mb-2 mt-2"/>' +
         '<div v-show="failure">' +
             '<div class="alert alert-danger">FAILED</div>' +
         '</div>' +
-        '<div v-show="!failure && this.results.length < numRolls">' +
+        '<div v-show="(lastResult == null || lastResult.runningStatus != \'botch\') && results.length < numRolls">' +
             '<p class="h5 text-center mb-1 mt-0 text-mage font-weight-bold"><u>Roll</u></p>' +
             '<div class="row mb-2">' +
                 '<div class="col"> ' +
@@ -254,10 +249,12 @@ Vue.component('extended-action', {
                 '</div>' +
             '</div>' +
         '</div>' +
-        '<div v-show="success">' +
-            '<div class="alert alert-success">SUCCESS</div>' +
+        '<div v-show="(lastResult != null && lastResult.runningStatus == \'success\')">' +
+            '<div class="alert alert-success text-center font-weight-bold">SUCCESS</div>' +
         '</div>' +
-        
+        '<div v-show="(lastResult != null && lastResult.runningStatus == \'botch\')">' +
+            '<div class="alert alert-danger text-center font-weight-bold">BOTCH</div>' +
+        '</div>' +
 
         '<div v-show="results.length > 0"> '+
             '<div class="card text-white mb-3" v-for="(r, idx) in results"> ' +

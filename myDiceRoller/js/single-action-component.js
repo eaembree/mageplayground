@@ -35,7 +35,6 @@ Vue.component('single-action', {
             this.numDice = this.clamp(this.numDice, 1, 500);
         },
         rollDice: function(){
-            console.log(this.numDice + ' ' + this.difficulty + ' ' + this.threshold)
             let result = this.diceRoller.getSingleActionResult(this.numDice, this.difficulty, this.threshold, false);
             this.lastResult = result;
             this.results.splice(0, 0, result);
@@ -180,7 +179,7 @@ Vue.component('single-action', {
                     '<tbody> ' +
                         '<tr v-for="r in results" class="text-mage"> ' +
                             '<td>{{r.outcome}}</td> ' +
-                            '<td class="text-center"><span v-if="r.botchType == \'original\'">{{r.finalSuccesses}}</span><span v-else>N/A</span></td> ' +
+                            '<td class="text-center">{{r.finalSuccesses}}</td> ' +
                             '<td class="text-center">{{r.successes}}</td> ' +
                             '<td class="text-center">{{r.ones}}</td> ' +
                             '<td class="text-center">{{r.numDice}}</td> ' +

@@ -12,6 +12,10 @@ function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, s
     this.botchType = botchType;
     this.tensType = tensType;
     this.usedWillpower = usedWillpower;
+
+    this.isBotch = function(){
+        return this.outcome === 'Botch';
+    }
 }
 
 function DiceRoller(){
@@ -128,7 +132,9 @@ function DiceRoller(){
 
         if(finalSuccesses <= 0){
             if(this.originalBotch()){
-                isBotch = true;
+                if(ones > 0) {
+                    isBotch = true;
+                }
             } else if(this.revM20Botch()){
                 if(rolledSuccesses <= 0 && ones > 0){
                     isBotch = true;
