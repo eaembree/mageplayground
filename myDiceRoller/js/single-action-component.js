@@ -21,6 +21,9 @@ Vue.component('single-action', {
         showHistory: false
       }
     },
+    created: function (){
+        this.$emit('show-botch-and-tens');
+    },
     methods: {
         changeDifficulty: function(amount){
             this.difficulty += amount;

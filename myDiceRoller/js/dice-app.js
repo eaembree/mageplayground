@@ -22,7 +22,7 @@ app = new Vue({
         thresholdMax: 6,
 
         hideBotchAndTensButtons: false,
-        botch: 'original',
+        botch: 'm20',
         botchText: '',
         tens: 'regular',
         tensText: '',
@@ -98,13 +98,6 @@ app = new Vue({
         },
         settings: function(){
             $('#settings-modal').modal('show');
-        },
-        toggleAppState: function(){
-            if(this.appState === this.appStates.single){
-                this.goToExtendedState();
-            } else {
-                this.goToSingleState();
-            }
         },
         goToSingleState: function(){
             this.appState = this.appStates.single;

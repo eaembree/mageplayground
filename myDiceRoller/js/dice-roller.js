@@ -143,7 +143,7 @@ function DiceRoller(){
         }
 
         let minSuccesses = threshold > 0 ? threshold : 1;
-        let outcome = isBotch ? 'Botch' : (finalSuccesses >= minSuccesses ? 'Success' : 'Fail');
+        let outcome = isBotch ? 'Botch' : (finalSuccesses >= minSuccesses ? 'Success' : 'Failure');
 
         return new SingleActionResult(
             numDice,

@@ -33,6 +33,9 @@ Vue.component('extended-action', {
         failure: false
       }
     },
+    created: function (){
+        this.$emit('show-botch-and-tens');
+    },
     methods: {
         changeDifficulty: function(amount){
             this.difficulty += amount;
@@ -158,17 +161,21 @@ Vue.component('extended-action', {
                         '<div class="d-flex justify-content-center"> ' +
                             '<div class="d-none d-sm-inline-block"> ' +
                                 '<span class="text-mage font-weight-bold">Successes Needed:</span> ' +
+                                '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(-5)">-5</button> ' +
                                 '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(-1)">-1</button> ' +
                                 '<span class="text-mage font-weight-bold ml-1 mr-1">{{successesNeeded}}</span> ' +
                                 '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(1)">+1</button> ' +
+                                '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(5)">+5</button> ' +
                             '</div> ' +
                             '<div class="d-sm-none"> ' +
                                 '<div class="d-flex justify-content-center text-mage font-weight-bold">Successes Needed:</div> ' +
                                 '<div class="d-flex justify-content-center"> ' +
                                     '<div> '+
                                         '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(-1)">-1</button> ' +
+                                        '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(-5)">-5</button> ' +
                                         '<span class="text-mage font-weight-bold ml-1 mr-1">{{successesNeeded}}</span> ' +
                                         '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(1)">+1</button> ' +
+                                        '<button class="btn btn-mage font-weight-bold" v-on:click="changeSuccessesNeeded(5)">+5</button> ' +
                                     '</div>' +
                                 '</div> ' +
                             '</div>' +
@@ -204,19 +211,6 @@ Vue.component('extended-action', {
                 '<div class="row">' +
                     '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
-                            'Botch: <span class="ml-1 mr-1">{{botchText}}</span> ' +
-                        '</div> ' +
-                    '</div>' +
-                    '<div class="col">' +
-                        '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
-                            '10s: <span class="ml-1 mr-1">{{tensText}}</span> ' +
-                        '</div> ' +
-                    '</div>' +
-                '</div>' +
-
-                '<div class="row">' +
-                    '<div class="col">' +
-                        '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
                             'Difficulty: <span class="ml-1 mr-1">{{difficulty}}</span> ' +
                         '</div> ' +
                     '</div>' +
@@ -249,8 +243,7 @@ Vue.component('extended-action', {
         '</div>' +
     '</div> ' +
 
-    '<div v-show="state == states.rolling"> ' +
-        //'<p>{{lastResult}}</p>'+    
+    '<div v-show="state == states.rolling"> ' +   
         '<hr class="mb-2 mt-2"/>' +
         '<div v-show="failure">' +
             '<div class="alert alert-danger">FAILED</div>' +
@@ -272,6 +265,9 @@ Vue.component('extended-action', {
         '<div v-show="(lastResult != null && lastResult.runningStatus == \'botch\')">' +
             '<div class="alert alert-danger text-center font-weight-bold">BOTCH</div>' +
         '</div>' +
+        '<div v-show="(lastResult != null && lastResult.runningStatus == \'failure\')">' +
+            '<div class="alert alert-danger text-center font-weight-bold">FAILURE</div>' +
+        '</div>' +
 
         '<div v-show="results.length > 0"> '+
             '<div class="card text-white mb-3" v-for="(r, idx) in results"> ' +
@@ -280,31 +276,19 @@ Vue.component('extended-action', {
                     '<button v-if="idx == 0" class="btn btn-sm btn-mage-inv pt-0 pt-0" v-on:click="removeLastResult">remove</button> ' +
                 '</div> ' +
                 '<div class="card-body pt-1 pb-1"> ' +
-                    '<div class="row" v-show="r.finalSuccesses == 0 && r.ones == 0"><div class="col text-center text-mage"><span class="h5">Fail</span></div></div>' +
-                    '<div class="row" v-show="r.finalSuccesses > 0">' +
+                    '<div class="row">' +
                         '<div class="col text-center text-mage">' +
                             '<span class="h5">' +
-                                '<span v-show="r.finalSuccesses == 1">{{r.finalSuccesses}} Success</span>' +
-                                '<span v-show="r.finalSuccesses > 1">{{r.finalSuccesses}} Successes</span>' +
-                            '</span>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="row" v-show="r.finalSuccesses == 0 && r.ones > 0">' +
-                        '<div class="col text-center text-mage">' +
-                            '<span class="h5">' +
-                                '<span v-show="r.botchType == \'none\'">Fail</span>' +
-                                '<span v-show="r.botchType != \'none\'">Botch</span>' +
+                                '<span v-show="r.finalSuccesses == 0">' +
+                                    '<span v-show="r.outcome == \'Botch\'">Botch | {{r.runningSuccesses}} Total Successes</span>' +
+                                    '<span v-show="r.outcome == \'Failure\'">Failure | {{r.runningSuccesses}} Total Successes</span>' +
+                                '</span>' +    
+                                '<span v-show="r.finalSuccesses == 1">{{r.finalSuccesses}} Success | {{r.runningSuccesses}} Total</span>' +
+                                '<span v-show="r.finalSuccesses > 1">{{r.finalSuccesses}} Successes | {{r.runningSuccesses}} Total</span>' +
                             '</span>' +
                         '</div>' +
                     '</div>' +
                     '<div class="row">' +
-                        '<div class="col-sm">' +
-                            '<div class="card border-mage mb-1">' +
-                                '<div class="card-body bg-mage p-1 text-mage">' +
-                                    '<span class="font-weight-bold">Total Successes:</span> {{r.runningSuccesses}}' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
                         '<div class="col-sm">' +
                             '<div class="card border-mage mb-1">' +
                                 '<div class="card-body bg-mage p-1 text-mage">' +
@@ -360,7 +344,6 @@ Vue.component('extended-action', {
                                 '</div> ' +
                             '</div> ' +
                         '</div> ' +
-                        //'<p class="text-mage">{{r}}</p>' +
                     '</div> ' +
                 '</div> ' +
             '</div> ' +
