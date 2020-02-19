@@ -28,6 +28,15 @@
             <h5 class="d-md-none text-center mage-title pt-1 pb-1">Mage Dice Roller <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1" data-toggle="modal" data-target="#help-modal"><i class="far fa-question-circle"></i></button> <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1"  v-on:click="settings"><i class="fas fa-cog"></i></button></h5>
 
             <div v-cloak>
+                <div class="row mt-2 mb-2" v-show="!hideBotchAndTensButtons">
+                    <div class="col">
+                        <button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="botchModal('show')" v-bind:disabled="hideBotchAndTensButtons == true">Botch: {{botchText}}</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="tensModal('show')" v-bind:disabled="hideBotchAndTensButtons == true">10s: {{tensText}}</button>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col">
                         <div class="btn-group d-flex">
