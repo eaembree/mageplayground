@@ -7,13 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Should use CDNs in production -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css"
-        integrity="sha256-ybRkN9dBjhcS2qrW1z+hfCxq+1aBdwyQM5wlQoQVt/0=" crossorigin="anonymous" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css"
+        integrity="sha256-ybRkN9dBjhcS2qrW1z+hfCxq+1aBdwyQM5wlQoQVt/0=" crossorigin="anonymous" /> -->
 
-    <link rel="stylesheet" href="css/dice-app.css?v=6" />
+    <link rel="stylesheet" href="css/bootstrap/4.4.1/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome/5.12.0/all.min.css" />
+    <link rel="stylesheet" href="css/dice-app.css" />
 
     <title>My Dice Roller</title>
 </head>
@@ -189,7 +192,9 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+
+    <!-- Should use CDNs in production -->
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -200,14 +205,23 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"
         integrity="sha256-ngFW3UnAN0Tnm76mDuu7uUtYEcG3G5H1+zioJw3t+68=" crossorigin="anonymous"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"
-        integrity="sha256-NSuqgY2hCZJUN6hDMFfdxvkexI7+iLxXQbL540RQ/c4=" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"
+        integrity="sha256-NSuqgY2hCZJUN6hDMFfdxvkexI7+iLxXQbL540RQ/c4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/js/all.min.js"
-        integrity="sha256-0vuk8LXoyrmCjp1f0O300qo1M75ZQyhH9X3J6d+scmk=" crossorigin="anonymous"></script>
-        <script src="js/dice-roller.js?v=6"></script>
-        <script src="js/single-action-component.js?v=6"></script>
-        <script src="js/extended-action-component.js?v=6"></script>
-        <script src="js/dice-app.js?v=6"></script>
+        integrity="sha256-0vuk8LXoyrmCjp1f0O300qo1M75ZQyhH9X3J6d+scmk=" crossorigin="anonymous"></script> -->
+    
+    <script src="js/jquery/jquery-3.4.1.slim.min.js"></script>
+    <script src="js/popper/1.16.0/popper.min.js"></script>
+    <script src="js/bootstrap/4.4.1/bootstrap.min.js"></script>
+    <script src="js/vue/2.6.11/vue.min.js"></script>
+    <!-- <script src="js/vue/2.6.11/vue.js"></script> -->
+    <script src="js/font-awesome/5.12.0/all.min.js"></script>
+    
+    
+    <script src="js/dice-roller.js?v=7"></script>
+    <script src="js/single-action-component.js?v=7"></script>
+    <script src="js/extended-action-component.js?v=7"></script>
+    <script src="js/dice-app.js?v=7"></script>
 </body>
 
 </html>
