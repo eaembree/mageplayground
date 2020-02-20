@@ -132,7 +132,7 @@ function DiceRoller(){
 
         if(finalSuccesses <= 0){
             if(this.originalBotch()){
-                if(ones > 0) {
+                if(ones > rolledSuccesses) {
                     isBotch = true;
                 }
             } else if(this.revM20Botch()){
