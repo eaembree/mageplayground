@@ -34,6 +34,10 @@ app = new Vue({
             extended: 'extended'
         },
 
+        settings: {
+            botchAndTensCanChangeOutsideSettings: true
+        },
+
         appState: 'single'
     },
     created: function(){
