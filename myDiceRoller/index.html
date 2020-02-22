@@ -28,12 +28,23 @@
             <h5 class="d-md-none text-center mage-title pt-1 pb-1">Mage Dice Roller <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1" data-toggle="modal" data-target="#help-modal"><i class="far fa-question-circle"></i></button> <button class="btn btn-sm btn-mage pt-0 pb-0 mb-1"  v-on:click="settings"><i class="fas fa-cog"></i></button></h5>
 
             <div v-cloak>
-                <div class="row mt-2 mb-2" v-show="!hideBotchAndTensButtons">
-                    <div class="col">
-                        <button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="botchModal('show')" v-bind:disabled="hideBotchAndTensButtons == true">Botch: {{botchText}}</button>
+                <div class="mt-2 mb-2">
+                    <div v-if="appSettings.botchAndTensCanChangeOutsideSettings">
+                        <botch-and-tens v-if="appSettings.botchAndTensCanChangeOutsideSettings"
+                            v-bind:hide-botch-and-tens-buttons="hideBotchAndTensButtons"
+                            v-bind:botch-text="botchText" v-bind:tens-text="tensText"
+                            v-on:botch-modal-show="botchModal('show')" v-on:tens-modal-show="tensModal('show')"></botch-and-tens>
                     </div>
-                    <div class="col">
-                        <button class="btn btn-block btn-mage-inv font-weight-bold" v-on:click="tensModal('show')" v-bind:disabled="hideBotchAndTensButtons == true">10s: {{tensText}}</button>
+                    <div v-else>
+                        <div class="card border-mage">
+                            <div class="card-body bg-mage p-1">
+                                <div class="d-flex justify-content-center">
+                                    <div>
+                                        <span class="text-mage font-weight-bold">Botch: {{botchText}}, Tens: {{tensText}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -222,8 +233,8 @@
     <script src="js/jquery/jquery-3.4.1.slim.min.js"></script>
     <script src="js/popper/1.16.0/popper.min.js"></script>
     <script src="js/bootstrap/4.4.1/bootstrap.min.js"></script>
-    <script src="js/vue/2.6.11/vue.min.js"></script>
-    <!-- <script src="js/vue/2.6.11/vue.js"></script> -->
+    <!-- <script src="js/vue/2.6.11/vue.min.js"></script> -->
+    <script src="js/vue/2.6.11/vue.js"></script>
     <script src="js/font-awesome/5.12.0/all.min.js"></script>
     
     

@@ -34,8 +34,8 @@ app = new Vue({
             extended: 'extended'
         },
 
-        settings: {
-            botchAndTensCanChangeOutsideSettings: true
+        appSettings: {
+            botchAndTensCanChangeOutsideSettings: false
         },
 
         appState: 'single'
@@ -101,6 +101,7 @@ app = new Vue({
             this.tensText = 'BAD TENS TYPE';
         },
         settings: function(){
+            console.log('show settings')
             $('#settings-modal').modal('show');
         },
         goToSingleState: function(){

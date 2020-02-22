@@ -50,6 +50,7 @@ Vue.component('single-action', {
         }
     },
     template: '<div> ' +
+    
     '<div class="row mt-2"> ' +
         '<div class="col"> ' +
             '<div class="card border-mage"> ' +
