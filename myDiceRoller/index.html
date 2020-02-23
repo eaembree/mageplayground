@@ -74,7 +74,9 @@
                         :tens-options="tensOptions" :tens="tens" :tens-text="tensText"
                         :dice-roller="diceRoller"
                         v-on:show-botch-and-tens="lockBotchAndTens(false)"
-                        v-on:hide-botch-and-tens="lockBotchAndTens(true)"></extended-action>
+                        v-on:hide-botch-and-tens="lockBotchAndTens(true)"
+                        v-bind:allow-botch-fix="appSettings.allowBotchFix"
+                        v-bind:allow-failure-fix="appSettings.allowFailureFix"></extended-action>
                 </div>
             </div>
 
@@ -118,16 +120,50 @@
                             <div class="mt-1">
                                 <h5 class="text-center">Show Botch/Tens Buttons</h5>
                                 <div class="btn-group d-flex">
-                                    <button class="btn"
+                                    <button class="btn w-100"
                                         v-bind:class="{ 'btn-mage-inv font-weight-bold': appSettings.botchAndTensCanChangeOutsideSettings, 'btn-outline-mage-inv': !appSettings.botchAndTensCanChangeOutsideSettings }"
                                         v-on:click="setAppSettings('botchAndTensCanChangeOutsideSettings', true)">
                                         <span v-if="appSettings.botchAndTensCanChangeOutsideSettings"><i class="fas fa-check"></i> </span>
                                         Yes
                                     </button>
-                                    <button class="btn"
+                                    <button class="btn w-100"
                                         v-bind:class="{ 'btn-mage-inv font-weight-bold': !appSettings.botchAndTensCanChangeOutsideSettings, 'btn-outline-mage-inv': appSettings.botchAndTensCanChangeOutsideSettings }"
                                         v-on:click="setAppSettings('botchAndTensCanChangeOutsideSettings', false)">
                                         <span v-if="!appSettings.botchAndTensCanChangeOutsideSettings"><i class="fas fa-check"></i> </span>
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <h5 class="text-center">Allow Botch Fix w/ Willpower</h5>
+                                <div class="btn-group d-flex">
+                                    <button class="btn w-100"
+                                        v-bind:class="{ 'btn-mage-inv font-weight-bold': appSettings.allowBotchFix, 'btn-outline-mage-inv': !appSettings.allowBotchFix }"
+                                        v-on:click="setAppSettings('allowBotchFix', true)">
+                                        <span v-if="appSettings.allowBotchFix"><i class="fas fa-check"></i> </span>
+                                        Yes
+                                    </button>
+                                    <button class="btn w-100"
+                                        v-bind:class="{ 'btn-mage-inv font-weight-bold': !appSettings.allowBotchFix, 'btn-outline-mage-inv': appSettings.allowBotchFix }"
+                                        v-on:click="setAppSettings('allowBotchFix', false)">
+                                        <span v-if="!appSettings.allowBotchFix"><i class="fas fa-check"></i> </span>
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <h5 class="text-center">Allow Failure Fix w/ Willpower</h5>
+                                <div class="btn-group d-flex">
+                                    <button class="btn w-100"
+                                        v-bind:class="{ 'btn-mage-inv font-weight-bold': appSettings.allowFailureFix, 'btn-outline-mage-inv': !appSettings.allowFailureFix }"
+                                        v-on:click="setAppSettings('allowFailureFix', true)">
+                                        <span v-if="appSettings.allowFailureFix"><i class="fas fa-check"></i> </span>
+                                        Yes
+                                    </button>
+                                    <button class="btn w-100"
+                                        v-bind:class="{ 'btn-mage-inv font-weight-bold': !appSettings.allowFailureFix, 'btn-outline-mage-inv': appSettings.allowFailureFix }"
+                                        v-on:click="setAppSettings('allowFailureFix', false)">
+                                        <span v-if="!appSettings.allowFailureFix"><i class="fas fa-check"></i> </span>
                                         No
                                     </button>
                                 </div>

@@ -13,7 +13,9 @@ Vue.component('extended-action', {
         tensOptions: Array,
         tens: String,
         tensText: String,
-        diceRoller: Object
+        diceRoller: Object,
+        allowBotchFix: Boolean,
+        allowFailureFix: Boolean
     },
     data: function () {
       return {
@@ -112,6 +114,28 @@ Vue.component('extended-action', {
         getLastRunningSuccesses: function() {
             if(this.results.length === 0) return 0;
             return this.results[0].runningSuccesses;
+        },
+        tryFixBotch: function(){
+            console.log('try fix botch');
+            if(this.lastResult === null) {
+                console.log('tryFixFailure: Last result does not exist');
+                return;
+            }
+            if(this.lastResult.outcome !== 'Botch') {
+                console.log('tryFixFailure: Last result is not Botch');
+                return;
+            }
+        },
+        tryFixFailure: function(){
+            console.log('try fix failure');
+            if(this.lastResult === null) {
+                console.log('tryFixFailure: Last result does not exist');
+                return;
+            }
+            if(this.lastResult.outcome !== 'Failure') {
+                console.log('tryFixFailure: Last result is not Failure');
+                return;
+            }
         }
     },
     template: '<div> ' +
@@ -280,8 +304,22 @@ Vue.component('extended-action', {
                         '<div class="col text-center text-mage">' +
                             '<span class="h5">' +
                                 '<span v-show="r.finalSuccesses == 0">' +
-                                    '<span v-show="r.outcome == \'Botch\'">Botch | {{r.runningSuccesses}} Total Successes</span>' +
-                                    '<span v-show="r.outcome == \'Failure\'">Failure | {{r.runningSuccesses}} Total Successes</span>' +
+                                    '<div v-show="r.outcome == \'Botch\'">' +
+                                        '<span>Botch | {{r.runningSuccesses}} Total Successes</span>'+
+                                        '<div class="row mb-1" v-if="idx == 0">' +
+                                            '<div class="col-10 offset-1">'+
+                                                '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0" v-on:click=tryFixBotch>Spend Willpower</button>' +
+                                            '</div>'+
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div v-show="r.outcome == \'Failure\'">' +
+                                        '<span>Failure | {{r.runningSuccesses}} Total Successes</span>' +
+                                        '<div class="row mb-1" v-if="idx == 0">' +
+                                            '<div class="col-10 offset-1">'+
+                                                '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0" v-on:click=tryFixFailure>Spend Willpower</button>' +
+                                            '</div>'+
+                                        '</div>' +
+                                    '</div>' +
                                 '</span>' +    
                                 '<span v-show="r.finalSuccesses == 1">{{r.finalSuccesses}} Success | {{r.runningSuccesses}} Total</span>' +
                                 '<span v-show="r.finalSuccesses > 1">{{r.finalSuccesses}} Successes | {{r.runningSuccesses}} Total</span>' +

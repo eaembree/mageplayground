@@ -1,5 +1,5 @@
 function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, successes, ones, finalSuccesses,
-                            difficulty, threshold, botchType, tensType, usedWillpower) {
+                            difficulty, threshold, botchType, tensType, usedWillpower, isFixedWithWill) {
     this.numDice = numDice;
     this.rollOutcomes = rollOutcomes;
     this.rollOutcomesArray = rollOutcomesArray;
@@ -12,10 +12,11 @@ function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, s
     this.botchType = botchType;
     this.tensType = tensType;
     this.usedWillpower = usedWillpower;
+    this.isFixedWithWill = isFixedWithWill;
 
     this.isBotch = function(){
         return this.outcome === 'Botch';
-    }
+    };
 }
 
 function DiceRoller(){
@@ -157,7 +158,29 @@ function DiceRoller(){
             threshold,
             this.botch,
             this.tens,
-            applyWillpower
+            applyWillpower,
+            false
+       );
+    }
+
+    this.cloneActionResult = function(singleOutcome) {
+        let clonedRollOutcomes = this.mergeDiceDicts(this.emptyRollsDict(), singleOutcome.rollOutcomes);
+        let clonedRollOutcomesArray = this.resultDictToArray(clonedRollOutcomes);
+
+        return new SingleActionResult(
+            singleOutcome.numDice,
+            clonedRollOutcomes,
+            clonedRollOutcomesArray,
+            singleOutcome.outcome,
+            singleOutcome.rolledSuccesses,
+            singleOutcome.ones,
+            singleOutcome.finalSuccesses,
+            singleOutcome.difficulty,
+            singleOutcome.threshold,
+            singleOutcome.botch,
+            singleOutcome.tens,
+            singleOutcome.applyWillpower,
+            singleOutcome.isFixedWithWill
        );
     }
 }

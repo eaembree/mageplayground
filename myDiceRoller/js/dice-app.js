@@ -35,7 +35,9 @@ app = new Vue({
         },
 
         appSettings: {
-            botchAndTensCanChangeOutsideSettings: true
+            botchAndTensCanChangeOutsideSettings: true,
+            allowBotchFix: true,
+            allowFailureFix: true
         },
 
         appState: 'single'
@@ -107,12 +109,21 @@ app = new Vue({
             this.appState = this.appStates.extended;
         },
         setAppSettings(settingName, newValue){
-            if(settingName === 'botchAndTensCanChangeOutsideSettings') {
-                if(newValue === true){
-                    this.appSettings.botchAndTensCanChangeOutsideSettings = true;
-                } else if(newValue === false){
-                    this.appSettings.botchAndTensCanChangeOutsideSettings = false;
-                }
+            switch(settingName) {
+                case 'botchAndTensCanChangeOutsideSettings':
+                    if(typeof(newValue) !== 'boolean') return;
+                    this.appSettings.botchAndTensCanChangeOutsideSettings = newValue;
+                    return;
+                
+                case 'allowBotchFix':
+                    if(typeof(newValue) !== 'boolean') return;
+                    this.appSettings.allowBotchFix = newValue;
+                    return;
+
+                case 'allowFailureFix':
+                    if(typeof(newValue) !== 'boolean') return;
+                    this.appSettings.allowFailureFix = newValue;
+                    return;
             }
         }
     }
