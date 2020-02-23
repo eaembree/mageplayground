@@ -211,19 +211,6 @@ Vue.component('extended-action', {
                 '<div class="row">' +
                     '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
-                            'Botch: <span class="ml-1 mr-1">{{botchText}}</span> ' +
-                        '</div> ' +
-                    '</div>' +
-                    '<div class="col">' +
-                        '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
-                            '10s: <span class="ml-1 mr-1">{{tensText}}</span> ' +
-                        '</div> ' +
-                    '</div>' +
-                '</div>' +
-
-                '<div class="row">' +
-                    '<div class="col">' +
-                        '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
                             'Difficulty: <span class="ml-1 mr-1">{{difficulty}}</span> ' +
                         '</div> ' +
                     '</div>' +
