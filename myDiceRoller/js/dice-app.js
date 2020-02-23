@@ -21,7 +21,7 @@ app = new Vue({
         thresholdMin: 0,
         thresholdMax: 6,
 
-        hideBotchAndTensButtons: false,
+        lockBotchAndTensButtons: false,
         botch: 'm20',
         botchText: '',
         tens: 'regular',
@@ -35,7 +35,7 @@ app = new Vue({
         },
 
         appSettings: {
-            botchAndTensCanChangeOutsideSettings: false
+            botchAndTensCanChangeOutsideSettings: true
         },
 
         appState: 'single'
@@ -54,11 +54,8 @@ app = new Vue({
 
             return theValue;
         },
-        hideBotchAndTens: function(){
-            this.hideBotchAndTensButtons = true;
-        },
-        showBotchAndTens: function(){
-            this.hideBotchAndTensButtons = false;
+        lockBotchAndTens: function(shouldLock){
+            this.lockBotchAndTensButtons = shouldLock;
         },
         botchModal: function(cmd){
             $('#botch-picker').modal(cmd);
@@ -101,7 +98,6 @@ app = new Vue({
             this.tensText = 'BAD TENS TYPE';
         },
         settings: function(){
-            console.log('show settings')
             $('#settings-modal').modal('show');
         },
         goToSingleState: function(){
@@ -109,6 +105,15 @@ app = new Vue({
         },
         goToExtendedState: function(){
             this.appState = this.appStates.extended;
+        },
+        setAppSettings(settingName, newValue){
+            if(settingName === 'botchAndTensCanChangeOutsideSettings') {
+                if(newValue === true){
+                    this.appSettings.botchAndTensCanChangeOutsideSettings = true;
+                } else if(newValue === false){
+                    this.appSettings.botchAndTensCanChangeOutsideSettings = false;
+                }
+            }
         }
     }
 });
