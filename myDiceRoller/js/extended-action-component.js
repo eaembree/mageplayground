@@ -125,6 +125,9 @@ Vue.component('extended-action', {
                 console.log('tryFixFailure: Last result is not Botch');
                 return;
             }
+
+            this.lastResult.fixWithWill();
+            this.lastResult.runningStatus = 'failure';
         },
         tryFixFailure: function(){
             console.log('try fix failure');
@@ -136,6 +139,10 @@ Vue.component('extended-action', {
                 console.log('tryFixFailure: Last result is not Failure');
                 return;
             }
+
+            this.lastResult.fixWithWill();
+            this.lastResult.runningSuccesses++;
+            //this.lastResult.runningStatus = 'success';// TODO
         }
     },
     template: '<div> ' +
@@ -296,7 +303,7 @@ Vue.component('extended-action', {
         '<div v-show="results.length > 0"> '+
             '<div class="card text-white mb-3" v-for="(r, idx) in results"> ' +
                 '<div class="card-header bg-mage text-mage font-weight-bold pt-1 pb-1 d-flex justify-content-between"> ' +
-                    '<span>Roll {{r.rollNumber}}</span> ' +
+                    '<span><span v-show="r.isFixedWithWill" class="text-danger"><i class="fas fa-hammer"></i></span> Roll {{r.rollNumber}}</span> ' +
                     '<button v-if="idx == 0" class="btn btn-sm btn-mage-inv pt-0 pt-0" v-on:click="removeLastResult">remove</button> ' +
                 '</div> ' +
                 '<div class="card-body pt-1 pb-1"> ' +
@@ -326,6 +333,7 @@ Vue.component('extended-action', {
                             '</span>' +
                         '</div>' +
                     '</div>' +
+                    '<div class="text-mage">{{r}}</div>'+
                     '<div class="row">' +
                         '<div class="col-sm">' +
                             '<div class="card border-mage mb-1">' +

@@ -14,9 +14,27 @@ function SingleActionResult(numDice, rollOutcomes, rollOutcomesArray, outcome, s
     this.usedWillpower = usedWillpower;
     this.isFixedWithWill = isFixedWithWill;
 
-    this.isBotch = function(){
+    this.isBotch = function() {
         return this.outcome === 'Botch';
     };
+
+    this.fixWithWill = function() {
+        if(this.outcome === 'Success') return;
+        if(this.outcome === 'Botch') {
+            this.isFixedWithWill = true;
+            this.outcome = 'Failure'
+            // TODO Count Willpower
+        } else if(this.outcome === 'Failure') {
+            this.isFixedWithWill = true;
+            this.outcome = 'Success'
+            // TODO Count Willpower
+            if(this.finalSuccesses < 0) {
+                this.finalSuccesses = 0;
+            }
+
+            this.finalSuccesses++;
+        }
+    }
 }
 
 function DiceRoller(){
