@@ -120,6 +120,8 @@ Vue.component('extended-action', {
             return this.results[0].runningSuccesses;
         },
         tryFixBotch: function(){
+            if(!this.allowBotchFix) return;
+
             if(this.lastResult === null) {
                 return;
             }
@@ -132,6 +134,8 @@ Vue.component('extended-action', {
             this.updateRunningState(this.lastResult, this.lastResult.runningSuccesses, this.lastResult.runningWillpowerSpent + 1);
         },
         tryFixFailure: function(){
+            if(!this.allowFailureFix) return;
+
             if(this.lastResult === null) {
                 return;
             }
@@ -309,7 +313,7 @@ Vue.component('extended-action', {
                                 '<span v-show="r.finalSuccesses == 0">' +
                                     '<div v-show="r.outcome == \'Botch\'">' +
                                         '<span>Botch | {{r.runningSuccesses}} Total Successes</span>'+
-                                        '<div class="row mb-1" v-if="idx == 0">' +
+                                        '<div class="row mb-1" v-if="idx == 0 && allowBotchFix">' +
                                             '<div class="col-10 offset-1">'+
                                                 '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0 mt-1" v-on:click=tryFixBotch>Spend Willpower</button>' +
                                             '</div>'+
@@ -317,7 +321,7 @@ Vue.component('extended-action', {
                                     '</div>' +
                                     '<div v-show="r.outcome == \'Failure\'">' +
                                         '<span>Failure | {{r.runningSuccesses}} Total Successes</span>' +
-                                        '<div class="row mb-1" v-if="idx == 0">' +
+                                        '<div class="row mb-1" v-if="idx == 0 && allowFailureFix">' +
                                             '<div class="col-10 offset-1">'+
                                                 '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0 mt-1" v-on:click=tryFixFailure>Spend Willpower</button>' +
                                             '</div>'+
