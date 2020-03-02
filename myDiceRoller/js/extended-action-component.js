@@ -30,9 +30,7 @@ Vue.component('extended-action', {
         states: {
             setup: 'setup',
             rolling: 'rolling',
-        },
-        success: false,
-        failure: false
+        }
       }
     },
     created: function (){
@@ -73,8 +71,6 @@ Vue.component('extended-action', {
         },
         reset: function(){
             if(this.state == this.states.rolling){
-                this.success = false;
-                this.failure = false;
                 this.state = this.states.setup;
                 this.results.splice(0, this.results.length);
                 this.lastResult = null;
@@ -92,19 +88,27 @@ Vue.component('extended-action', {
             thisResult.runningStatus = '';
             thisResult.rollNumber = this.results.length + 1;
 
-            thisResult.runningSuccesses = this.getLastRunningSuccesses() + thisResult.finalSuccesses;
-            thisResult.runningWillpowerSpent = this.getLastRunningWillpowerSpent() + (applyWillpower ? 1 : 0);
+            let runningSuccesses = this.getLastRunningSuccesses() + thisResult.finalSuccesses;
+            let runningWillpowerSpent = this.getLastRunningWillpowerSpent() + (applyWillpower ? 1 : 0);
             this.results.splice(0, 0, thisResult);
             this.lastResult = thisResult;
 
-            if(thisResult.isBotch()) {
-                thisResult.runningStatus = 'botch';
+            this.updateRunningState(thisResult, runningSuccesses,runningWillpowerSpent);
+        },
+        updateRunningState: function(newResult, runningSuccesses, runningWillpowerSpent) {
+            newResult.runningSuccesses = runningSuccesses;
+            newResult.runningWillpowerSpent = runningWillpowerSpent;
+
+            if(newResult.isBotch()) {
+                newResult.runningStatus = 'botch';
             }
-            else if(thisResult.runningSuccesses >= this.successesNeeded) {
-                thisResult.runningStatus = 'success';
+            else if(newResult.runningSuccesses >= this.successesNeeded) {
+                newResult.runningStatus = 'success';
             }
             else if(this.results.length >= this.numRolls) {
-                thisResult.runningStatus = 'failure';
+                newResult.runningStatus = 'failure';
+            } else {
+                newResult.runningStatus = '';
             }
         },
         getLastRunningWillpowerSpent: function() {
@@ -116,33 +120,28 @@ Vue.component('extended-action', {
             return this.results[0].runningSuccesses;
         },
         tryFixBotch: function(){
-            console.log('try fix botch');
             if(this.lastResult === null) {
-                console.log('tryFixFailure: Last result does not exist');
                 return;
             }
             if(this.lastResult.outcome !== 'Botch') {
-                console.log('tryFixFailure: Last result is not Botch');
                 return;
             }
 
             this.lastResult.fixWithWill();
-            this.lastResult.runningStatus = 'failure';
+
+            this.updateRunningState(this.lastResult, this.lastResult.runningSuccesses, this.lastResult.runningWillpowerSpent + 1);
         },
         tryFixFailure: function(){
-            console.log('try fix failure');
             if(this.lastResult === null) {
-                console.log('tryFixFailure: Last result does not exist');
                 return;
             }
             if(this.lastResult.outcome !== 'Failure') {
-                console.log('tryFixFailure: Last result is not Failure');
                 return;
             }
 
             this.lastResult.fixWithWill();
-            this.lastResult.runningSuccesses++;
-            //this.lastResult.runningStatus = 'success';// TODO
+
+            this.updateRunningState(this.lastResult, this.lastResult.runningSuccesses + 1, this.lastResult.runningWillpowerSpent + 1);
         }
     },
     template: '<div> ' +
@@ -276,9 +275,6 @@ Vue.component('extended-action', {
 
     '<div v-show="state == states.rolling"> ' +   
         '<hr class="mb-2 mt-2"/>' +
-        '<div v-show="failure">' +
-            '<div class="alert alert-danger">FAILED</div>' +
-        '</div>' +
         '<div v-show="(lastResult == null || lastResult.runningStatus != \'botch\') && results.length < numRolls">' +
             '<p class="h5 text-center mb-1 mt-0 text-mage font-weight-bold"><u>Roll</u></p>' +
             '<div class="row mb-2">' +
@@ -315,7 +311,7 @@ Vue.component('extended-action', {
                                         '<span>Botch | {{r.runningSuccesses}} Total Successes</span>'+
                                         '<div class="row mb-1" v-if="idx == 0">' +
                                             '<div class="col-10 offset-1">'+
-                                                '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0" v-on:click=tryFixBotch>Spend Willpower</button>' +
+                                                '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0 mt-1" v-on:click=tryFixBotch>Spend Willpower</button>' +
                                             '</div>'+
                                         '</div>' +
                                     '</div>' +
@@ -323,7 +319,7 @@ Vue.component('extended-action', {
                                         '<span>Failure | {{r.runningSuccesses}} Total Successes</span>' +
                                         '<div class="row mb-1" v-if="idx == 0">' +
                                             '<div class="col-10 offset-1">'+
-                                                '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0" v-on:click=tryFixFailure>Spend Willpower</button>' +
+                                                '<button type="button" class="btn btn-block btn-sm btn-mage-inv pt-0 pt-0 mt-1" v-on:click=tryFixFailure>Spend Willpower</button>' +
                                             '</div>'+
                                         '</div>' +
                                     '</div>' +
@@ -333,7 +329,7 @@ Vue.component('extended-action', {
                             '</span>' +
                         '</div>' +
                     '</div>' +
-                    '<div class="text-mage">{{r}}</div>'+
+                    //'<div class="text-mage">{{r}}</div>'+
                     '<div class="row">' +
                         '<div class="col-sm">' +
                             '<div class="card border-mage mb-1">' +
