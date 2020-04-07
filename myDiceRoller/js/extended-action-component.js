@@ -52,7 +52,6 @@ Vue.component('extended-action', {
         },
         toggleMaxRolls: function(){
             this.noMaxRolls = !this.noMaxRolls;
-            console.log(this.noMaxRolls);
         },
         changeSuccessesNeeded(amount){
             this.successesNeeded += amount;
@@ -164,7 +163,7 @@ Vue.component('extended-action', {
                             '<div> ' +
                                 '<span class="text-mage font-weight-bold"> ' +
                                     '<span class="d-none d-sm-inline-block">Difficulty</span> ' +
-                                    '<div class="d-flex justify-content-center d-sm-none">Difficulty</div> ' +
+                                    '<div class="d-flex justify-content-center d-sm-none mb-1" style="border: 1px solid transparent">Difficulty</div> ' +
                                 '</span> ' +
                                 '<button class="btn btn-mage font-weight-bold" v-on:click="changeDifficulty(-1)">-1</button> ' +
                                 '<span class="text-mage font-weight-bold ml-1 mr-1">{{difficulty}}</span> ' +
@@ -187,8 +186,14 @@ Vue.component('extended-action', {
                                         '<button class="btn btn-mage-inv font-weight-bold pb-0 pt-0 mb-1" v-on:click="toggleMaxRolls"># Rolls</button>' +
                                     '</div> ' +
                                 '</span> ' +
-                                '<span v-if="noMaxRolls" class="text-mage" style="font-size: 1rem">' +
-                                    '<i class="fas fa-infinity"></i>' +
+                                '<span v-if="noMaxRolls" class="text-mage font-weight-bold">' +
+                                    '<span class="d-none d-sm-inline-block">' +
+                                        // EAE - This is the twitchy one on sm+ sizes    
+                                        '<span style="padding: 6px 12px; margin-top: 2px border: 2px solid transparent; font-size: 1.1rem"><i class="fas fa-infinity"></i></span>' +
+                                    '</span>' +
+                                    '<span class="d-sm-none d-flex justify-content-center">' +
+                                        '<span style="padding: 5px 12px; border: 2px solid transparent; font-size: 1.1rem"><i class="fas fa-infinity"></i></span>' +
+                                    '</span>' +
                                 '</span>' +
                                 '<span v-else>' +
                                     '<button class="btn btn-mage font-weight-bold" v-on:click="changeNumRolls(-1)">-1</button> ' +
