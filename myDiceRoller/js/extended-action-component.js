@@ -21,6 +21,7 @@ Vue.component('extended-action', {
       return {
         difficulty: 6,
         numRolls: 2,
+        noMaxRolls: false,
         successesNeeded: 1,
         numDice: 3,
         lastResult: null,
@@ -48,6 +49,10 @@ Vue.component('extended-action', {
         changeNumDice: function(amount){
             this.numDice += amount;
             this.numDice = this.clamp(this.numDice, 1, 500);
+        },
+        toggleMaxRolls: function(){
+            this.noMaxRolls = !this.noMaxRolls;
+            console.log(this.noMaxRolls);
         },
         changeSuccessesNeeded(amount){
             this.successesNeeded += amount;
@@ -158,8 +163,8 @@ Vue.component('extended-action', {
                         '<div class="d-flex justify-content-center"> ' +
                             '<div> ' +
                                 '<span class="text-mage font-weight-bold"> ' +
-                                    '<span class="d-none d-sm-inline-block">Difficulty:</span> ' +
-                                    '<div class="d-flex justify-content-center d-sm-none">Difficulty:</div> ' +
+                                    '<span class="d-none d-sm-inline-block">Difficulty</span> ' +
+                                    '<div class="d-flex justify-content-center d-sm-none">Difficulty</div> ' +
                                 '</span> ' +
                                 '<button class="btn btn-mage font-weight-bold" v-on:click="changeDifficulty(-1)">-1</button> ' +
                                 '<span class="text-mage font-weight-bold ml-1 mr-1">{{difficulty}}</span> ' +
@@ -175,12 +180,21 @@ Vue.component('extended-action', {
                         '<div class="d-flex justify-content-center"> ' +
                             '<div> ' +
                                 '<span class="text-mage font-weight-bold"> ' +
-                                    '<span class="d-none d-sm-inline-block"># Rolls:</span> ' +
-                                    '<div class="d-flex justify-content-center d-sm-none"># Rolls:</div> ' +
+                                    '<span class="d-none d-sm-inline-block">' +
+                                    '<button class="btn btn-mage-inv font-weight-bold" v-on:click="toggleMaxRolls"># Rolls</button>' +
+                                    '</span> ' +
+                                    '<div class="d-flex justify-content-center d-sm-none">' +
+                                        '<button class="btn btn-mage-inv font-weight-bold pb-0 pt-0 mb-1" v-on:click="toggleMaxRolls"># Rolls</button>' +
+                                    '</div> ' +
                                 '</span> ' +
-                                '<button class="btn btn-mage font-weight-bold" v-on:click="changeNumRolls(-1)">-1</button> ' +
-                                '<span class="text-mage font-weight-bold ml-1 mr-1">{{numRolls}}</span> ' +
-                                '<button class="btn btn-mage font-weight-bold" v-on:click="changeNumRolls(1)">+1</button> ' +
+                                '<span v-if="noMaxRolls" class="text-mage" style="font-size: 1rem">' +
+                                    '<i class="fas fa-infinity"></i>' +
+                                '</span>' +
+                                '<span v-else>' +
+                                    '<button class="btn btn-mage font-weight-bold" v-on:click="changeNumRolls(-1)">-1</button> ' +
+                                    '<span class="text-mage font-weight-bold ml-1 mr-1">{{numRolls}}</span> ' +
+                                    '<button class="btn btn-mage font-weight-bold" v-on:click="changeNumRolls(1)">+1</button> ' +
+                                '</span>' +
                             '</div> ' +
                         '</div> ' +
                     '</div> ' +
