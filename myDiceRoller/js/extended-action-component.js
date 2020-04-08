@@ -52,7 +52,6 @@ Vue.component('extended-action', {
         },
         toggleMaxRolls: function(){
             this.noMaxRolls = !this.noMaxRolls;
-            console.log(this.noMaxRolls);
         },
         changeSuccessesNeeded(amount){
             this.successesNeeded += amount;
@@ -110,7 +109,7 @@ Vue.component('extended-action', {
             else if(newResult.runningSuccesses >= this.successesNeeded) {
                 newResult.runningStatus = 'success';
             }
-            else if(this.results.length >= this.numRolls) {
+            else if(this.results.length >= this.numRolls && !this.noMaxRolls) {
                 newResult.runningStatus = 'failure';
             } else {
                 newResult.runningStatus = '';
@@ -264,7 +263,7 @@ Vue.component('extended-action', {
                     '</div>' +
                     '<div class="col">' +
                         '<div class="d-flex justify-content-center text-mage font-weight-bold"> ' +
-                            '# Rolls: <span class="ml-1 mr-1">{{numRolls}}</span> ' +
+                            '# Rolls: <span v-if="noMaxRolls" class="pl-1"><i class="fas fa-infinity"></i></span><span class="ml-1 mr-1" v-else>{{numRolls}}</span> ' +
                         '</div> ' +
                     '</div>' +
                 '</div>' +
@@ -293,7 +292,7 @@ Vue.component('extended-action', {
 
     '<div v-show="state == states.rolling"> ' +   
         '<hr class="mb-2 mt-2"/>' +
-        '<div v-show="(lastResult == null || lastResult.runningStatus != \'botch\') && results.length < numRolls">' +
+        '<div v-show="(lastResult == null || lastResult.runningStatus != \'botch\') && (results.length < numRolls || noMaxRolls)">' +
             '<p class="h5 text-center mb-1 mt-0 text-mage font-weight-bold"><u>Roll</u></p>' +
             '<div class="row mb-2">' +
                 '<div class="col"> ' +
