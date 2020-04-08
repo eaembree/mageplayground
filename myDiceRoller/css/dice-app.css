@@ -94,3 +94,14 @@
 .full-width {
   width: 100%;;
 }
+
+.infinity-text {
+  padding: 6px 12px 6px 6px;
+  height: 40px;
+  display: inline-block
+}
+
+.difficulty-heading-small {
+  padding-top: 1px;
+  padding-bottom: 1px
+}

@@ -163,7 +163,7 @@ Vue.component('extended-action', {
                             '<div> ' +
                                 '<span class="text-mage font-weight-bold"> ' +
                                     '<span class="d-none d-sm-inline-block">Difficulty</span> ' +
-                                    '<div class="d-flex justify-content-center d-sm-none">Difficulty</div> ' +
+                                    '<div class="d-flex justify-content-center d-sm-none mb-1 difficulty-heading-small">Difficulty</div> ' +
                                 '</span> ' +
                                 '<button class="btn btn-mage font-weight-bold" v-on:click="changeDifficulty(-1)">-1</button> ' +
                                 '<span class="text-mage font-weight-bold ml-1 mr-1">{{difficulty}}</span> ' +
@@ -186,8 +186,13 @@ Vue.component('extended-action', {
                                         '<button class="btn btn-mage-inv font-weight-bold pb-0 pt-0 mb-1" v-on:click="toggleMaxRolls"># Rolls</button>' +
                                     '</div> ' +
                                 '</span> ' +
-                                '<span v-if="noMaxRolls" class="text-mage" style="font-size: 1rem">' +
-                                    '<i class="fas fa-infinity"></i>' +
+                                '<span v-if="noMaxRolls" class="text-mage">' +
+                                    '<span class="infinity-text d-none d-sm-inline-block">' +
+                                        '<i class="fas fa-infinity"></i>' +
+                                    '</span>' +
+                                    '<div class="infinity-text d-sm-none d-flex justify-content-center">' +
+                                            '<i class="fas fa-infinity"></i>' +
+                                    '</div>' +
                                 '</span>' +
                                 '<span v-else>' +
                                     '<button class="btn btn-mage font-weight-bold" v-on:click="changeNumRolls(-1)">-1</button> ' +
